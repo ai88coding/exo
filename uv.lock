@@ -417,7 +417,7 @@ wheels = [
 
 [[package]]
 name = "exo"
-version = "0.3.70"
+version = "1.0.71"
 source = { editable = "." }
 dependencies = [
     { name = "aiofiles", marker = "sys_platform == 'darwin' or sys_platform == 'linux' or (extra == 'extra-3-exo-mlx-cpu' and extra == 'extra-3-exo-mlx-cuda12') or (extra == 'extra-3-exo-mlx-cpu' and extra == 'extra-3-exo-mlx-cuda13') or (extra == 'extra-3-exo-mlx-cpu' and extra == 'extra-3-exo-mlx-none') or (extra == 'extra-3-exo-mlx-cuda12' and extra == 'extra-3-exo-mlx-cuda13') or (extra == 'extra-3-exo-mlx-cuda12' and extra == 'extra-3-exo-mlx-none') or (extra == 'extra-3-exo-mlx-cuda13' and extra == 'extra-3-exo-mlx-none')" },
