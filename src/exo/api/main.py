@@ -1771,6 +1771,7 @@ class API:
                     capabilities=card.capabilities,
                     reasoning_dialect=card.reasoning_dialect,
                     context_length=card.context_length,
+                    is_downloaded=True if await anyio.to_thread.run_sync(resolve_existing_model, card.model_id, card) else False,
                 )
                 for card in cards
             ]

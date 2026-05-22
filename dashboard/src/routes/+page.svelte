@@ -783,6 +783,7 @@
       quantization?: string;
       base_model?: string;
       capabilities?: string[];
+      is_downloaded?: boolean;
     }>
   >([]);
   type ModelMemoryFitStatus =
@@ -6140,6 +6141,7 @@
                   capabilities: m.capabilities ?? [],
                   family: m.family ?? "",
                   quantization: m.quantization ?? "",
+                  is_downloaded: m.is_downloaded ?? false,
                 }))}
                 clusterLabel={chatClusterLabel}
                 totalMemoryGB={availableMemoryGB()}

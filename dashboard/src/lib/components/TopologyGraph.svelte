@@ -165,7 +165,11 @@
 
     const nodes = data.nodes || {};
     const edges = data.edges || [];
-    const nodeIds = Object.keys(nodes);
+    const nodeIds = Object.keys(nodes).sort((a, b) => {
+      const memA = nodes[a]?.system_info?.memory ?? 0;
+      const memB = nodes[b]?.system_info?.memory ?? 0;
+      return memB !== memA ? memB - memA : a.localeCompare(b);
+    });
 
     const rect = svgContainer.getBoundingClientRect();
     const width = rect.width;

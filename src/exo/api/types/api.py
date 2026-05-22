@@ -49,6 +49,7 @@ class ModelListModel(BaseModel):
     base_model: str = Field(default="")
     capabilities: list[str] = Field(default_factory=list)
     reasoning_dialect: ReasoningDialect = "none"
+    is_downloaded: bool = False
 
 
 class ModelList(BaseModel):
