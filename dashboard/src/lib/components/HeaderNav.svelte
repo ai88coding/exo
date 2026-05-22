@@ -147,17 +147,21 @@
   <!-- Center: Logo (clickable to go home) -->
   <button
     onclick={handleHome}
-    class="bg-transparent border-none outline-none focus:outline-none transition-opacity duration-200 hover:opacity-90 {showHome
+    class="bg-transparent border-none outline-none focus:outline-none transition-opacity duration-200 hover:opacity-90 flex items-center gap-3 {showHome
       ? 'cursor-pointer'
       : 'cursor-default'}"
     title={showHome ? "Go to home" : ""}
     disabled={!showHome}
   >
-    <img
-      src="/exo-logo.png"
-      alt="EXO"
-      class="h-12 md:h-18 drop-shadow-[0_0_4px_rgba(255,215,0,0.3)]"
-    />
+    <svg viewBox="0 0 24 24" fill="none" class="w-9 h-9 drop-shadow-[0_0_8px_rgba(118,185,0,0.4)] flex-shrink-0">
+      <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="none" stroke="#76b900" stroke-width="1.5"/>
+      <path d="M2 17L12 22L22 17" fill="none" stroke="#76b900" stroke-width="1.5" opacity="0.5"/>
+      <path d="M2 12L12 17L22 12" fill="none" stroke="#76b900" stroke-width="1.5" opacity="0.8"/>
+    </svg>
+    <div class="flex flex-col items-start">
+      <span class="text-[clamp(0.9rem,3vw,1.75rem)] font-bold text-white tracking-tight leading-none" style="text-shadow: 0 0 12px rgba(118,185,0,0.4)">Mac Spark</span>
+      <span class="text-[clamp(0.55rem,1.4vw,0.95rem)] text-white/50 font-mono tracking-widest leading-none mt-0.5">數字馬研究室</span>
+    </div>
   </button>
 
   <!-- Right: Home + Downloads + Mobile Right Toggle -->
@@ -169,7 +173,7 @@
     {#if showMobileRightToggle}
       <button
         onclick={handleToggleMobileRight}
-        class="p-2 rounded border border-exo-light-gray/30 hover:border-exo-yellow/50 hover:bg-exo-medium-gray/30 transition-colors cursor-pointer md:hidden"
+class="p-2 rounded border border-exo-light-gray/30 hover:border-exo-green/50 hover:bg-exo-medium-gray/30 transition-colors cursor-pointer md:hidden"
         title={mobileRightOpen ? "Hide instances" : "Show instances"}
         aria-label={mobileRightOpen
           ? "Hide instances panel"
@@ -182,7 +186,7 @@
           stroke="currentColor"
           stroke-width="2"
           class="w-5 h-5 {mobileRightOpen
-            ? 'text-exo-yellow'
+            ? 'text-exo-green'
             : 'text-exo-light-gray'}"
         >
           {#if mobileRightOpen}

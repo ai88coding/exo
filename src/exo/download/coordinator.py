@@ -7,6 +7,9 @@ import anyio
 from anyio import BrokenResourceError, ClosedResourceError, current_time, to_thread
 from loguru import logger
 
+import os
+import subprocess
+
 from exo.download.download_utils import (
     RepoDownloadProgress,
     delete_model,
@@ -81,6 +84,38 @@ class DownloadCoordinator:
             read_only=is_read_only_model_dir(found),
         )
 
+    async def _sync_to_peers(
+        self, model_id: ModelId, found_path: Path | None
+    ) -> None:
+        rsync_targets = os.environ.get("EXO_RSYNC_TARGETS", "")
+        if not rsync_targets:
+            return
+        src = str(found_path) if found_path else str(self._default_model_dir(model_id))
+        for target in rsync_targets.split(","):
+            target = target.strip()
+            if not target:
+                continue
+            try:
+                proc = await to_thread.run_sync(
+                    subprocess.run,
+                    [
+                        "rsync", "-avz", "--progress",
+                        src + "/",
+                        f"{target}/",
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=3600,
+                )
+                if proc.returncode == 0:
+                    logger.info(f"Synced {model_id} -> {target}")
+                else:
+                    logger.warning(
+                        f"rsync to {target} failed (exit {proc.returncode}): {proc.stderr[:200]}"
+                    )
+            except Exception as exc:
+                logger.warning(f"rsync to {target} error: {exc}")
+
     async def _download_progress_callback(
         self, callback_shard: ShardMetadata, progress: RepoDownloadProgress
     ) -> None:
@@ -108,6 +143,7 @@ class DownloadCoordinator:
                     NodeDownloadProgress(download_progress=completed)
                 )
                 self._last_progress_time.pop(model_id, None)
+                await self._sync_to_peers(model_id, found if found else None)
             elif (
                 progress.status == "in_progress"
                 and current_time() - self._last_progress_time.get(model_id, 0.0)

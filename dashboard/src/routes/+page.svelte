@@ -3827,25 +3827,21 @@
       : 0.2};"
   ></div>
 
-  <!-- Shooting Stars Background -->
+  <!-- Ambient Particles Background -->
   <div
-    class="shooting-stars"
-    style="transition: opacity 0.5s ease; opacity: {showOnboardingOverlay
-      ? 0.4
-      : 1};"
+    class="ambient-particles"
+    style="transition: opacity 0.5s ease; opacity: {showOnboardingOverlay ? 0.3 : 0.8};"
   >
-    <div
-      class="shooting-star"
-      style="top: 10%; left: 20%; --duration: 45s; --delay: 0s;"
-    ></div>
-    <div
-      class="shooting-star"
-      style="top: 30%; left: 65%; --duration: 45s; --delay: 15s;"
-    ></div>
-    <div
-      class="shooting-star"
-      style="top: 50%; left: 40%; --duration: 45s; --delay: 30s;"
-    ></div>
+    <div class="particle" style="width:3px;height:3px;top:15%;left:10%;background:rgba(118,185,0,0.7);--d:12s;--delay:0s;"></div>
+    <div class="particle" style="width:2px;height:2px;top:25%;left:30%;background:rgba(201,168,76,0.6);--d:15s;--delay:3s;"></div>
+    <div class="particle" style="width:4px;height:4px;top:60%;left:70%;background:rgba(118,185,0,0.5);--d:10s;--delay:6s;"></div>
+    <div class="particle" style="width:2px;height:2px;top:40%;left:50%;background:rgba(64,201,170,0.5);--d:14s;--delay:9s;"></div>
+    <div class="particle" style="width:3px;height:3px;top:80%;left:25%;background:rgba(118,185,0,0.6);--d:11s;--delay:2s;"></div>
+    <div class="particle" style="width:2px;height:2px;top:70%;left:85%;background:rgba(201,168,76,0.5);--d:13s;--delay:7s;"></div>
+    <div class="particle" style="width:3px;height:3px;top:35%;left:60%;background:rgba(155,126,201,0.5);--d:16s;--delay:4s;"></div>
+    <div class="particle" style="width:2px;height:2px;top:55%;left:15%;background:rgba(118,185,0,0.7);--d:9s;--delay:11s;"></div>
+    <div class="particle" style="width:4px;height:4px;top:20%;left:80%;background:rgba(118,185,0,0.4);--d:17s;--delay:5s;"></div>
+    <div class="particle" style="width:2px;height:2px;top:90%;left:45%;background:rgba(201,168,76,0.4);--d:12s;--delay:8s;"></div>
   </div>
 
   {#if showOnboardingOverlay}

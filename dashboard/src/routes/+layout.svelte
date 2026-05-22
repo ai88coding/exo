@@ -7,8 +7,8 @@
 </script>
 
 <svelte:head>
-  <title>EXO</title>
-  <meta name="description" content="EXO - Distributed AI Cluster Dashboard" />
+  <title>Mac Spark (數字馬研究室)</title>
+  <meta name="description" content="Mac Spark - 數字馬研究室 AI Cluster Dashboard" />
 </svelte:head>
 
 <div class="min-h-screen bg-background text-foreground">

@@ -225,7 +225,7 @@
         .attr("y", centerY)
         .attr("text-anchor", "middle")
         .attr("dominant-baseline", "middle")
-        .attr("fill", "rgba(255,215,0,0.4)")
+        .attr("fill", "rgba(118,185,0,0.4)")
         .attr("font-size", isMinimized ? 10 : 12)
         .attr("font-family", "SF Mono, monospace")
         .attr("letter-spacing", "0.1em")
@@ -569,22 +569,22 @@
 
       // Holographic wireframe colors - bright yellow for filter, subtle yellow for hover, grey for filtered out
       const wireColor = isInFilter
-        ? "rgba(255,215,0,1)" // Bright yellow for filter selection
+        ? "rgba(118,185,0,1)" // Bright yellow for filter selection
         : isHovered
-          ? "rgba(255,215,0,0.7)" // Subtle yellow for hover
+          ? "rgba(118,185,0,0.7)" // Subtle yellow for hover
           : isHighlighted
-            ? "rgba(255,215,0,0.9)" // Yellow for instance highlight
+            ? "rgba(118,185,0,0.9)" // Yellow for instance highlight
             : isFilteredOut
               ? "rgba(140,140,140,0.6)" // Grey for filtered out
               : "rgba(179,179,179,0.8)"; // Default
       const wireColorBright = "rgba(255,255,255,0.9)";
       const fillColor = isInFilter
-        ? "rgba(255,215,0,0.25)"
+        ? "rgba(118,185,0,0.25)"
         : isHovered
-          ? "rgba(255,215,0,0.12)"
+          ? "rgba(118,185,0,0.12)"
           : isHighlighted
-            ? "rgba(255,215,0,0.15)"
-            : "rgba(255,215,0,0.08)";
+            ? "rgba(118,185,0,0.15)"
+            : "rgba(118,185,0,0.08)";
       const strokeWidth = isInFilter
         ? 3
         : isHovered
@@ -593,7 +593,7 @@
             ? 2.5
             : 1.5;
       const screenFill = "rgba(0,20,40,0.9)";
-      const glowColor = "rgba(255,215,0,0.3)";
+      const glowColor = "rgba(118,185,0,0.3)";
 
       const nodeG = nodesGroup
         .append("g")
@@ -675,7 +675,7 @@
             )
             .attr("width", iconBaseWidth)
             .attr("height", memFillActualHeight)
-            .attr("fill", "rgba(255,215,0,0.75)")
+            .attr("fill", "rgba(118,185,0,0.75)")
             .attr("clip-path", `url(#${studioClipId})`);
         }
 
@@ -758,7 +758,7 @@
             )
             .attr("width", iconBaseWidth)
             .attr("height", memFillActualHeight)
-            .attr("fill", "rgba(255,215,0,0.75)")
+            .attr("fill", "rgba(118,185,0,0.75)")
             .attr("clip-path", `url(#${miniClipId})`);
         }
 
@@ -846,7 +846,7 @@
             )
             .attr("width", screenWidth - screenBezel * 2)
             .attr("height", memFillActualHeight)
-            .attr("fill", "rgba(255,215,0,0.85)")
+            .attr("fill", "rgba(118,185,0,0.85)")
             .attr("clip-path", `url(#${screenClipId})`);
         }
 
@@ -1054,7 +1054,7 @@
           .attr("font-family", "SF Mono, Monaco, monospace");
         memText
           .append("tspan")
-          .attr("fill", "rgba(255,215,0,0.9)")
+          .attr("fill", "rgba(118,185,0,0.9)")
           .text(`${formatBytes(ramUsed)}`);
         memText
           .append("tspan")
@@ -1091,7 +1091,7 @@
           .attr("x", nodeInfo.x)
           .attr("y", statsY)
           .attr("text-anchor", "middle")
-          .attr("fill", "rgba(255,215,0,0.7)")
+          .attr("fill", "rgba(118,185,0,0.7)")
           .attr("font-size", fontSize * 0.85)
           .attr("font-family", "SF Mono, Monaco, monospace")
           .text(
@@ -1129,7 +1129,7 @@
           .attr("font-family", "SF Mono, Monaco, monospace");
         memTextMini
           .append("tspan")
-          .attr("fill", "rgba(255,215,0,0.9)")
+          .attr("fill", "rgba(118,185,0,0.9)")
           .text(`${formatBytes(ramUsed)}`);
         memTextMini
           .append("tspan")
