@@ -590,6 +590,7 @@ class AppStore {
   debugMode = $state(false);
   topologyOnlyMode = $state(false);
   chatSidebarVisible = $state(true); // Shown by default
+  rightSidebarVisible = $state(true); // Right sidebar visible by default
   mobileChatSidebarOpen = $state(false); // Mobile drawer state
   mobileRightSidebarOpen = $state(false); // Mobile right drawer state
 
@@ -619,6 +620,7 @@ class AppStore {
       this.loadDebugModeFromStorage();
       this.loadTopologyOnlyModeFromStorage();
       this.loadChatSidebarVisibleFromStorage();
+      this.loadRightSidebarVisibleFromStorage();
       this.loadImageGenerationParamsFromStorage();
     }
   }
@@ -730,6 +732,28 @@ class AppStore {
       );
     } catch (error) {
       console.error("Failed to save chat sidebar visibility:", error);
+    }
+  }
+
+  private loadRightSidebarVisibleFromStorage() {
+    try {
+      const stored = localStorage.getItem("exo-right-sidebar-visible");
+      if (stored !== null) {
+        this.rightSidebarVisible = stored === "true";
+      }
+    } catch (error) {
+      console.error("Failed to load right sidebar visibility:", error);
+    }
+  }
+
+  private saveRightSidebarVisibleToStorage() {
+    try {
+      localStorage.setItem(
+        "exo-right-sidebar-visible",
+        this.rightSidebarVisible ? "true" : "false",
+      );
+    } catch (error) {
+      console.error("Failed to save right sidebar visibility:", error);
     }
   }
 
@@ -1255,6 +1279,20 @@ class AppStore {
   toggleChatSidebarVisible() {
     this.chatSidebarVisible = !this.chatSidebarVisible;
     this.saveChatSidebarVisibleToStorage();
+  }
+
+  getRightSidebarVisible(): boolean {
+    return this.rightSidebarVisible;
+  }
+
+  setRightSidebarVisible(visible: boolean) {
+    this.rightSidebarVisible = visible;
+    this.saveRightSidebarVisibleToStorage();
+  }
+
+  toggleRightSidebarVisible() {
+    this.rightSidebarVisible = !this.rightSidebarVisible;
+    this.saveRightSidebarVisibleToStorage();
   }
 
   getMobileChatSidebarOpen(): boolean {
@@ -3583,6 +3621,12 @@ export const toggleChatSidebarVisible = () =>
   appStore.toggleChatSidebarVisible();
 export const setChatSidebarVisible = (visible: boolean) =>
   appStore.setChatSidebarVisible(visible);
+
+export const rightSidebarVisible = () => appStore.getRightSidebarVisible();
+export const toggleRightSidebarVisible = () =>
+  appStore.toggleRightSidebarVisible();
+export const setRightSidebarVisible = (visible: boolean) =>
+  appStore.setRightSidebarVisible(visible);
 
 // Mobile sidebar state
 export const mobileChatSidebarOpen = () => appStore.mobileChatSidebarOpen;

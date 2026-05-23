@@ -20,6 +20,7 @@ from exo.shared.types.profiling import (
     DiskUsage,
     MemoryUsage,
     NetworkInterfaceInfo,
+    SystemPerformanceProfile,
     ThunderboltBridgeStatus,
 )
 from exo.shared.types.thunderbolt import (
@@ -383,8 +384,47 @@ class NodeBackends(TaggedModel):
         return cls(backends=backends)
 
 
+class NvidiaGpuMetrics(TaggedModel):
+    """GPU metrics from nvidia-smi on Linux nodes."""
+
+    system_profile: SystemPerformanceProfile
+
+    @classmethod
+    async def gather(cls) -> Self | None:
+        try:
+            proc = await anyio.run_process(
+                [
+                    "nvidia-smi",
+                    "--query-gpu=temperature.gpu,utilization.gpu,power.draw",
+                    "--format=csv,noheader,nounits",
+                ],
+                check=False,
+            )
+            if proc.returncode != 0:
+                return None
+            line = proc.stdout.decode("utf-8").strip()
+            if not line:
+                return None
+            parts = line.split(", ")
+            if len(parts) < 2:
+                return None
+            temp_c = float(parts[0])
+            gpu_util = float(parts[1]) / 100.0
+            power_w = float(parts[2]) if len(parts) > 2 else 0.0
+            return cls(
+                system_profile=SystemPerformanceProfile(
+                    gpu_usage=gpu_util,
+                    temp=temp_c,
+                    sys_power=power_w,
+                ),
+            )
+        except Exception:
+            return None
+
+
 GatheredInfo = (
     MacmonMetrics
+    | NvidiaGpuMetrics
     | MemoryUsage
     | NodeNetworkInterfaces
     | MacThunderboltIdentifiers
@@ -450,6 +490,7 @@ class InfoGatherer:
                 tg.start_soon(self._monitor_rdma_ctl_status, 10)
             if not IS_DARWIN:
                 tg.start_soon(self._monitor_memory_usage, 1)
+                tg.start_soon(self._monitor_nvidia_gpu, 1)
             tg.start_soon(self._watch_system_info, 10)
             tg.start_soon(self._monitor_misc, 60)
             tg.start_soon(self._monitor_static_info, 60)
@@ -570,6 +611,17 @@ class InfoGatherer:
             except Exception as e:
                 logger.opt(exception=e).warning("Error gathering disk usage")
             await anyio.sleep(disk_poll_interval)
+
+    async def _monitor_nvidia_gpu(self, interval: float):
+        while True:
+            try:
+                with fail_after(5):
+                    metrics = await NvidiaGpuMetrics.gather()
+                    if metrics is not None:
+                        await self.info_sender.send(metrics)
+            except Exception as e:
+                logger.opt(exception=e).warning("Error gathering nvidia GPU metrics")
+            await anyio.sleep(interval)
 
     async def _monitor_macmon(self, macmon_interval: float):
         if (

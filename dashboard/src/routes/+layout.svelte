@@ -7,7 +7,7 @@
 </script>
 
 <svelte:head>
-  <title>Mac Spark (數字馬研究室)</title>
+  <title>DGX Spark (數字馬研究室)</title>
   <meta name="description" content="Mac Spark - 數字馬研究室 AI Cluster Dashboard" />
 </svelte:head>
 

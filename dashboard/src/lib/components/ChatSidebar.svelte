@@ -12,6 +12,7 @@
     toggleDebugMode,
     topologyOnlyMode,
     toggleTopologyOnlyMode,
+    toggleChatSidebarVisible,
   } from "$lib/stores/app.svelte";
 
   interface Props {
@@ -263,6 +264,30 @@
 </script>
 
 {#snippet sidebarContent()}
+  <!-- Collapse button -->
+  <div class="flex justify-end px-4 pt-3 pb-0">
+    <button
+      onclick={toggleChatSidebarVisible}
+      class="p-1.5 rounded border border-exo-light-gray/20 hover:border-exo-yellow/50 hover:bg-exo-medium-gray/30 transition-colors cursor-pointer"
+      title="Collapse sidebar"
+      aria-label="Collapse conversation sidebar"
+    >
+      <svg
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+        class="w-4 h-4 text-exo-yellow"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
+        ></path>
+      </svg>
+    </button>
+  </div>
+
   <!-- Header -->
   <div class="p-4">
     <button
@@ -556,13 +581,13 @@
       <button
         type="button"
         onclick={toggleDebugMode}
-        class="p-1.5 rounded border border-exo-medium-gray/40 hover:border-exo-yellow/50 transition-colors cursor-pointer"
+        class="p-1.5 rounded border border-exo-green/50 hover:border-exo-green text-exo-green/70 hover:text-exo-green transition-colors cursor-pointer"
         title="Toggle debug mode"
       >
         <svg
           class="w-4 h-4 {debugEnabled
-            ? 'text-exo-yellow'
-            : 'text-exo-medium-gray'}"
+            ? 'text-exo-green-bright'
+            : 'text-exo-green/70'}"
           fill="currentColor"
           viewBox="0 0 24 24"
         >
@@ -579,13 +604,13 @@
       <button
         type="button"
         onclick={toggleTopologyOnlyMode}
-        class="p-1.5 rounded border border-exo-medium-gray/40 hover:border-exo-yellow/50 transition-colors cursor-pointer"
+        class="p-1.5 rounded border border-exo-green/50 hover:border-exo-green text-exo-green/70 hover:text-exo-green transition-colors cursor-pointer"
         title="Toggle topology only mode"
       >
         <svg
           class="w-4 h-4 {topologyOnlyEnabled
-            ? 'text-exo-yellow'
-            : 'text-exo-medium-gray'}"
+            ? 'text-exo-green-bright'
+            : 'text-exo-green/70'}"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

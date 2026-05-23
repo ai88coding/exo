@@ -7,9 +7,6 @@
   interface Props {
     showHome?: boolean;
     onHome?: (() => void) | null;
-    showSidebarToggle?: boolean;
-    sidebarVisible?: boolean;
-    onToggleSidebar?: (() => void) | null;
     showMobileMenuToggle?: boolean;
     mobileMenuOpen?: boolean;
     onToggleMobileMenu?: (() => void) | null;
@@ -25,9 +22,6 @@
   let {
     showHome = true,
     onHome = null,
-    showSidebarToggle = false,
-    sidebarVisible = true,
-    onToggleSidebar = null,
     showMobileMenuToggle = false,
     mobileMenuOpen = false,
     onToggleMobileMenu = null,
@@ -48,12 +42,6 @@
     }
   }
 
-  function handleToggleSidebar(): void {
-    if (onToggleSidebar) {
-      onToggleSidebar();
-    }
-  }
-
   function handleToggleMobileMenu(): void {
     if (onToggleMobileMenu) {
       onToggleMobileMenu();
@@ -71,24 +59,24 @@
   class="relative z-20 flex items-center justify-between px-4 md:px-6 pt-4 md:pt-8 pb-3 md:pb-4 bg-exo-dark-gray"
 >
   <!-- Logo (clickable to go home) -->
-  <button
-    onclick={handleHome}
-    class="bg-transparent border-none outline-none focus:outline-none transition-opacity duration-200 hover:opacity-90 flex items-center gap-3 {showHome
-      ? 'cursor-pointer'
-      : 'cursor-default'}"
-    title={showHome ? "Go to home" : ""}
-    disabled={!showHome}
-  >
-    <svg viewBox="0 0 24 24" fill="none" class="w-9 h-9 drop-shadow-[0_0_8px_rgba(118,185,0,0.4)] flex-shrink-0">
-      <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="none" stroke="#76b900" stroke-width="1.5"/>
-      <path d="M2 17L12 22L22 17" fill="none" stroke="#76b900" stroke-width="1.5" opacity="0.5"/>
-      <path d="M2 12L12 17L22 12" fill="none" stroke="#76b900" stroke-width="1.5" opacity="0.8"/>
-    </svg>
-    <div class="flex flex-col items-start">
-      <span class="text-[clamp(0.9rem,3vw,1.75rem)] font-bold text-white tracking-tight leading-none" style="text-shadow: 0 0 12px rgba(118,185,0,0.4)">Mac Spark</span>
-      <span class="text-[clamp(0.55rem,1.4vw,0.95rem)] text-white/50 font-mono tracking-widest leading-none mt-0.5">數字馬研究室</span>
-    </div>
-  </button>
+<button
+onclick={handleHome}
+class="bg-transparent border-none outline-none focus:outline-none transition-opacity duration-200 hover:opacity-90 flex items-center gap-3 {showHome
+? 'cursor-pointer'
+: 'cursor-default'}"
+title={showHome ? "Go to home" : ""}
+disabled={!showHome}
+>
+<svg viewBox="0 0 24 24" fill="none" class="w-9 h-9 flex-shrink-0" style="filter: drop-shadow(0 0 8px rgba(118,185,0,0.4)) drop-shadow(0 0 12px rgba(118,185,0,0.3));">
+<path d="M12 2L2 7L12 12L22 7L12 2Z" fill="none" stroke="#76b900" stroke-width="1.5"/>
+<path d="M2 17L12 22L22 17" fill="none" stroke="#76b900" stroke-width="1.5" opacity="0.5"/>
+<path d="M2 12L12 17L22 12" fill="none" stroke="#76b900" stroke-width="1.5" opacity="0.8"/>
+</svg>
+<div class="flex flex-col items-start">
+<span class="text-[clamp(0.9rem,3vw,1.75rem)] font-bold text-white tracking-tight leading-none" style="text-shadow: 0 0 10px rgba(118,185,0,0.5), 0 0 20px rgba(118,185,0,0.3);">Mac Spark</span>
+<span class="text-[clamp(0.55rem,1.4vw,0.95rem)] font-mono tracking-widest leading-none mt-0.5" style="color: #76b900; text-shadow: 0 0 8px rgba(118,185,0,0.6), 0 0 15px rgba(118,185,0,0.4); animation: glowPulse 2s ease-in-out infinite;">數字馬研究室</span>
+</div>
+</button>
 
   <!-- Right: Navigation + Sidebar toggles -->
   <nav
@@ -151,40 +139,6 @@
           : 'text-exo-light-gray'}"
       >
         {#if mobileMenuOpen}
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
-          ></path>
-        {:else}
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M13 5l7 7-7 7M5 5l7 7-7 7"
-          ></path>
-        {/if}
-      </svg>
-    </button>
-    <!-- Desktop sidebar toggle -->
-    <button
-      onclick={handleToggleSidebar}
-      class="p-2 rounded border border-exo-light-gray/30 hover:border-exo-yellow/50 hover:bg-exo-medium-gray/30 transition-colors cursor-pointer hidden md:block"
-      title={sidebarVisible ? "Hide sidebar" : "Show sidebar"}
-      aria-label={sidebarVisible
-        ? "Hide conversation sidebar"
-        : "Show conversation sidebar"}
-      aria-pressed={sidebarVisible}
-    >
-      <svg
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-        class="w-5 h-5 {sidebarVisible
-          ? 'text-exo-yellow'
-          : 'text-exo-light-gray'}"
-      >
-        {#if sidebarVisible}
           <path
             stroke-linecap="round"
             stroke-linejoin="round"

@@ -125,38 +125,61 @@
     return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + sizes[i];
   }
 
-  function getTemperatureColor(temp: number): string {
-    // Default for N/A temp - light gray
-    if (isNaN(temp) || temp === null) return "rgba(179, 179, 179, 0.8)";
+function getGPUValueClass(value: number, type: "temp" | "power" | "usage"): string {
+// Returns CSS class based on threshold: '' (green), 'yel' (yellow), 'red' (red)
+if (isNaN(value) || value === null || value <= 0) return "";
 
-    const coolTemp = 45; // Temp for pure blue
-    const midTemp = 57.5; // Temp for pure yellow
-    const hotTemp = 75; // Temp for pure red
+if (type === "temp") {
+  // Temperature thresholds: <50°C green, 50-80°C yellow, >80°C red
+  if (value < 50) return "";
+  if (value < 80) return "yel";
+  return "red";
+} else if (type === "power") {
+  // Power thresholds: assume similar ratios (e.g., <50% max power green)
+  // For DGX Spark, max ~60W, so <30W green, 30-48W yellow, >48W red
+  if (value < 30) return "";
+  if (value < 48) return "yel";
+  return "red";
+} else {
+  // Usage: <50% green, 50-80% yellow, >80% red
+  if (value < 50) return "";
+  if (value < 80) return "yel";
+  return "red";
+}
+}
 
-    const coolColor = { r: 93, g: 173, b: 226 }; // #5DADE2 (Blue)
-    const midColor = { r: 255, g: 215, b: 0 }; // #FFD700 (Yellow)
-    const hotColor = { r: 244, g: 67, b: 54 }; // #F44336 (Red)
+function getTemperatureColor(temp: number): string {
+// Default for N/A temp - light gray
+if (isNaN(temp) || temp === null) return "rgba(179, 179, 179, 0.8)";
 
-    let r: number, g: number, b: number;
+const coolTemp = 45; // Temp for pure blue
+const midTemp = 57.5; // Temp for pure yellow
+const hotTemp = 75; // Temp for pure red
 
-    if (temp <= coolTemp) {
-      ({ r, g, b } = coolColor);
-    } else if (temp <= midTemp) {
-      const ratio = (temp - coolTemp) / (midTemp - coolTemp);
-      r = Math.round(coolColor.r * (1 - ratio) + midColor.r * ratio);
-      g = Math.round(coolColor.g * (1 - ratio) + midColor.g * ratio);
-      b = Math.round(coolColor.b * (1 - ratio) + midColor.b * ratio);
-    } else if (temp < hotTemp) {
-      const ratio = (temp - midTemp) / (hotTemp - midTemp);
-      r = Math.round(midColor.r * (1 - ratio) + hotColor.r * ratio);
-      g = Math.round(midColor.g * (1 - ratio) + hotColor.g * ratio);
-      b = Math.round(midColor.b * (1 - ratio) + hotColor.b * ratio);
-    } else {
-      ({ r, g, b } = hotColor);
-    }
+const coolColor = { r: 93, g: 173, b: 226 }; // #5DADE2 (Blue)
+const midColor = { r: 255, g: 215, b: 0 }; // #FFD700 (Yellow)
+const hotColor = { r: 244, g: 67, b: 54 }; // #F44336 (Red)
 
-    return `rgb(${r}, ${g}, ${b})`;
-  }
+let r: number, g: number, b: number;
+
+if (temp <= coolTemp) {
+({ r, g, b } = coolColor);
+} else if (temp <= midTemp) {
+const ratio = (temp - coolTemp) / (midTemp - coolTemp);
+r = Math.round(coolColor.r * (1 - ratio) + midColor.r * ratio);
+g = Math.round(coolColor.g * (1 - ratio) + midColor.g * ratio);
+b = Math.round(coolColor.b * (1 - ratio) + midColor.b * ratio);
+} else if (temp < hotTemp) {
+const ratio = (temp - midTemp) / (hotTemp - midTemp);
+r = Math.round(midColor.r * (1 - ratio) + hotColor.r * ratio);
+g = Math.round(midColor.g * (1 - ratio) + hotColor.g * ratio);
+b = Math.round(midColor.b * (1 - ratio) + hotColor.b * ratio);
+} else {
+({ r, g, b } = hotColor);
+}
+
+return `rgb(${r}, ${g}, ${b})`;
+}
 
   function renderGraph() {
     if (!svgContainer || !data) return;
@@ -911,14 +934,22 @@
           .attr("fill", "rgba(255,255,255,0.08)")
           .attr("rx", 2);
       } else {
-        // Default/Unknown - holographic hexagon
+        // DGX Spark / Default - holographic hexagon with memory fill
         const hexRadius = nodeRadius * 0.6;
         const hexPoints = Array.from({ length: 6 }, (_, i) => {
           const angle = ((i * 60 - 30) * Math.PI) / 180;
           return `${nodeInfo.x + hexRadius * Math.cos(angle)},${nodeInfo.y + hexRadius * Math.sin(angle)}`;
         }).join(" ");
 
-        // Main shape
+        // Clip path for hexagon memory fill
+        const hexClipId = `hex-clip-${nodeInfo.id.replace(/[^a-zA-Z0-9]/g, "-")}`;
+        defs
+          .append("clipPath")
+          .attr("id", hexClipId)
+          .append("polygon")
+          .attr("points", hexPoints);
+
+        // Hex fill rect behind everything
         nodeG
           .append("polygon")
           .attr("class", "node-outline")
@@ -926,6 +957,20 @@
           .attr("fill", fillColor)
           .attr("stroke", wireColor)
           .attr("stroke-width", strokeWidth);
+
+        // Memory fill inside hexagon
+        if (ramUsagePercent > 0) {
+          const hexFillHeight = hexRadius * 2;
+          const hexFillActual = (ramUsagePercent / 100) * hexFillHeight;
+          nodeG
+            .append("rect")
+            .attr("x", nodeInfo.x - hexRadius)
+            .attr("y", nodeInfo.y + hexRadius - hexFillActual)
+            .attr("width", hexRadius * 2)
+            .attr("height", hexFillActual)
+            .attr("fill", "rgba(118,185,0,0.7)")
+            .attr("clip-path", `url(#${hexClipId})`);
+        }
       }
 
       // --- Vertical GPU Bar (right side of icon) ---
@@ -939,82 +984,68 @@
         const gpuBarX = nodeInfo.x + barXOffset;
         const gpuBarY = nodeInfo.y - gpuBarHeight / 2;
 
-        // GPU Bar Background (grey, no border)
+        // GPU Bar Background (transparent)
         nodeG
           .append("rect")
           .attr("x", gpuBarX)
           .attr("y", gpuBarY)
           .attr("width", gpuBarWidth)
           .attr("height", gpuBarHeight)
-          .attr("fill", "rgba(80, 80, 90, 0.7)")
+          .attr("fill", "transparent")
           .attr("rx", 2);
 
-        // GPU Bar Fill (from bottom up, colored by temperature)
-        if (gpuUsagePercent > 0) {
-          const fillHeight = (gpuUsagePercent / 100) * gpuBarHeight;
-          const gpuFillColor = getTemperatureColor(gpuTemp);
-          nodeG
-            .append("rect")
-            .attr("x", gpuBarX)
-            .attr("y", gpuBarY + (gpuBarHeight - fillHeight))
-            .attr("width", gpuBarWidth)
-            .attr("height", fillHeight)
-            .attr("fill", gpuFillColor)
-            .attr("opacity", 0.9)
-            .attr("rx", 2);
-        }
+// GPU Stats Text (centered on bar, multiline)
+// All text reduced by 25% (0.75 multiplier)
+const gpuTextX = gpuBarX + gpuBarWidth / 2;
+const gpuTextY = gpuBarY + gpuBarHeight / 2;
+const gpuTextFontSize = (isMinimized
+? Math.max(10, gpuBarWidth * 0.6)
+: Math.min(16, Math.max(12, gpuBarWidth * 0.55))) * 0.75; // 25% smaller
+const tempFontSize = gpuTextFontSize; // Same size as usage
+const lineSpacing = gpuTextFontSize * 1.25;
 
-    // GPU Stats Text (centered on bar, multiline, bigger and bold)
-    const gpuTextX = gpuBarX + gpuBarWidth / 2;
-    const gpuTextY = gpuBarY + gpuBarHeight / 2;
-    const gpuTextFontSize = isMinimized
-      ? Math.max(10, gpuBarWidth * 0.6)
-      : Math.min(16, Math.max(12, gpuBarWidth * 0.55));
-    const tempFontSize = gpuTextFontSize * 0.75;
-    const lineSpacing = gpuTextFontSize * 1.25;
+const gpuUsageText = `${gpuUsagePercent.toFixed(0)}%`;
+const tempText = !isNaN(gpuTemp) ? `${gpuTemp.toFixed(0)}°C` : "-";
+const powerText = sysPower !== null ? `${sysPower.toFixed(0)}W` : "-";
 
-    const gpuUsageText = `${gpuUsagePercent.toFixed(0)}%`;
-    const tempText = !isNaN(gpuTemp) ? `${gpuTemp.toFixed(0)}°C` : "-";
-    const powerText = sysPower !== null ? `${sysPower.toFixed(0)}W` : "-";
+// Get color classes based on thresholds
+const tempClass = getGPUValueClass(!isNaN(gpuTemp) ? gpuTemp : 0, "temp");
+const powerClass = getGPUValueClass(sysPower !== null ? sysPower : 0, "power");
+const usageClass = getGPUValueClass(gpuUsagePercent, "usage");
 
-    // GPU Usage %
-    nodeG
-      .append("text")
-      .attr("x", gpuTextX)
-      .attr("y", gpuTextY - lineSpacing)
-      .attr("text-anchor", "middle")
-      .attr("dominant-baseline", "middle")
-      .attr("fill", "#FFFFFF")
-      .attr("font-size", gpuTextFontSize)
-      .attr("font-weight", "700")
-      .attr("font-family", "SF Mono, Monaco, monospace")
-      .text(gpuUsageText);
+// Color helper function
+const getColor = (value: number, type: "temp" | "power" | "usage"): string => {
+const cls = getGPUValueClass(value, type);
+if (cls === "red") return "#e52020"; // Red
+if (cls === "yel") return "#f9c500"; // Yellow
+return "#76b900"; // Green
+};
 
-    // Temperature (25% smaller)
-    nodeG
-      .append("text")
-      .attr("x", gpuTextX)
-      .attr("y", gpuTextY)
-      .attr("text-anchor", "middle")
-      .attr("dominant-baseline", "middle")
-      .attr("fill", "#FFFFFF")
-      .attr("font-size", tempFontSize)
-      .attr("font-weight", "700")
-      .attr("font-family", "SF Mono, Monaco, monospace")
-      .text(tempText);
+const tempColor = getColor(!isNaN(gpuTemp) ? gpuTemp : 0, "temp");
+const powerColor = getColor(sysPower !== null ? sysPower : 0, "power");
+const usageColor = getColor(gpuUsagePercent, "usage");
 
-    // Power (Watts)
-    nodeG
-      .append("text")
-      .attr("x", gpuTextX)
-      .attr("y", gpuTextY + lineSpacing)
-      .attr("text-anchor", "middle")
-      .attr("dominant-baseline", "middle")
-      .attr("fill", "#FFFFFF")
-      .attr("font-size", gpuTextFontSize)
-      .attr("font-weight", "700")
-      .attr("font-family", "SF Mono, Monaco, monospace")
-      .text(powerText);
+function addText(g: any, text: string, x: number, y: number, color: string, fontSize: number) {
+  g.append("text")
+    .attr("x", x)
+    .attr("y", y)
+    .attr("text-anchor", "middle")
+    .attr("dominant-baseline", "middle")
+    .attr("fill", color)
+    .attr("font-size", fontSize)
+    .attr("font-weight", "700")
+    .attr("font-family", "SF Mono, Monaco, monospace")
+    .text(text);
+}
+
+// GPU Usage % (colored by threshold)
+addText(nodeG, gpuUsageText, gpuTextX, gpuTextY - lineSpacing, usageColor, gpuTextFontSize);
+
+// Temperature (colored by threshold)
+addText(nodeG, tempText, gpuTextX, gpuTextY, tempColor, tempFontSize);
+
+// Power (Watts, colored by threshold)
+addText(nodeG, powerText, gpuTextX, gpuTextY + lineSpacing, powerColor, gpuTextFontSize);
       }
 
     // Labels - adapt based on mode

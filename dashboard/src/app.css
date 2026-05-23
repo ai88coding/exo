@@ -87,14 +87,11 @@
 	* {
 		@apply border-border outline-ring/50;
 	}
-	html, body {
-		@apply bg-background text-foreground;
-		background-image: radial-gradient(ellipse at top left, rgba(118, 185, 0, 0.08) 0%, transparent 60%);
-		background-size: 800px 800px;
-		background-repeat: no-repeat;
-		font-family: 'SF Pro Display', 'NVIDIA Sans', 'Segoe UI', 'Noto Sans TC', system-ui, sans-serif;
-		letter-spacing: 0.02em;
-	}
+html, body {
+@apply bg-background text-foreground;
+font-family: 'SF Pro Display', 'NVIDIA Sans', 'Segoe UI', 'Noto Sans TC', system-ui, sans-serif;
+letter-spacing: 0.02em;
+}
 }
 
 @layer utilities {

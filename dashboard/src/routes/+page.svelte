@@ -1,13 +1,14 @@
 <script lang="ts">
-  import {
-    TopologyGraph,
-    ChatForm,
-    ChatMessages,
-    ChatSidebar,
-    ModelCard,
-    ModelPickerModal,
-    ChatModelSelector,
-  } from "$lib/components";
+import {
+TopologyGraph,
+ChatForm,
+ChatMessages,
+ChatSidebar,
+ModelCard,
+ModelPickerModal,
+ChatModelSelector,
+FireworksBackground,
+} from "$lib/components";
   import {
     pickAutoModel,
     getAutoTierIndex,
@@ -53,6 +54,8 @@
     toggleTopologyOnlyMode,
     chatSidebarVisible,
     toggleChatSidebarVisible,
+    rightSidebarVisible,
+    toggleRightSidebarVisible,
     mobileChatSidebarOpen,
     toggleMobileChatSidebar,
     setMobileChatSidebarOpen,
@@ -89,6 +92,7 @@
   const debugEnabled = $derived(debugMode());
   const topologyOnlyEnabled = $derived(topologyOnlyMode());
   const sidebarVisible = $derived(chatSidebarVisible());
+  const rightSidebarOpen = $derived(rightSidebarVisible());
   const mobileChatOpen = $derived(mobileChatSidebarOpen());
   const mobileRightOpen = $derived(mobileRightSidebarOpen());
   const tbBridgeCycles = $derived(thunderboltBridgeCycles());
@@ -1307,7 +1311,7 @@
     if (params.has("reset-onboarding")) {
       localStorage.removeItem(ONBOARDING_COMPLETE_KEY);
       window.history.replaceState({}, "", window.location.pathname);
-      onboardingStep = 1;
+      // onboardingStep = 1; // Disabled for now
       return;
     }
 
@@ -1331,7 +1335,7 @@
       if (res.ok) {
         const data = await res.json();
         if (!data.completed) {
-          onboardingStep = 1;
+          // onboardingStep = 1; // Disabled for now
         }
         return;
       }
@@ -1341,7 +1345,7 @@
 
     // Fallback: check localStorage
     if (!localStorage.getItem(ONBOARDING_COMPLETE_KEY)) {
-      onboardingStep = 1;
+      // onboardingStep = 1; // Disabled for now
     }
   });
 
@@ -3827,22 +3831,7 @@
       : 0.2};"
   ></div>
 
-  <!-- Ambient Particles Background -->
-  <div
-    class="ambient-particles"
-    style="transition: opacity 0.5s ease; opacity: {showOnboardingOverlay ? 0.3 : 0.8};"
-  >
-    <div class="particle" style="width:3px;height:3px;top:15%;left:10%;background:rgba(118,185,0,0.7);--d:12s;--delay:0s;"></div>
-    <div class="particle" style="width:2px;height:2px;top:25%;left:30%;background:rgba(201,168,76,0.6);--d:15s;--delay:3s;"></div>
-    <div class="particle" style="width:4px;height:4px;top:60%;left:70%;background:rgba(118,185,0,0.5);--d:10s;--delay:6s;"></div>
-    <div class="particle" style="width:2px;height:2px;top:40%;left:50%;background:rgba(64,201,170,0.5);--d:14s;--delay:9s;"></div>
-    <div class="particle" style="width:3px;height:3px;top:80%;left:25%;background:rgba(118,185,0,0.6);--d:11s;--delay:2s;"></div>
-    <div class="particle" style="width:2px;height:2px;top:70%;left:85%;background:rgba(201,168,76,0.5);--d:13s;--delay:7s;"></div>
-    <div class="particle" style="width:3px;height:3px;top:35%;left:60%;background:rgba(155,126,201,0.5);--d:16s;--delay:4s;"></div>
-    <div class="particle" style="width:2px;height:2px;top:55%;left:15%;background:rgba(118,185,0,0.7);--d:9s;--delay:11s;"></div>
-    <div class="particle" style="width:4px;height:4px;top:20%;left:80%;background:rgba(118,185,0,0.4);--d:17s;--delay:5s;"></div>
-    <div class="particle" style="width:2px;height:2px;top:90%;left:45%;background:rgba(201,168,76,0.4);--d:12s;--delay:8s;"></div>
-  </div>
+<FireworksBackground />
 
   {#if showOnboardingOverlay}
     <!-- ═══════════════════════════════════════════════════════ -->
@@ -4618,7 +4607,7 @@
           onclick={() => {
             onboardingStep = 0;
             setTimeout(() => {
-              onboardingStep = 1;
+              // onboardingStep = 1; // Disabled for now
             }, 50);
           }}
           class="flex items-center gap-1.5 text-xs font-sans text-white/15 hover:text-white/35 transition-colors duration-300 cursor-pointer"
@@ -4693,9 +4682,6 @@
     <HeaderNav
       showHome={true}
       onHome={handleGoHome}
-      showSidebarToggle={true}
-      {sidebarVisible}
-      onToggleSidebar={toggleChatSidebarVisible}
       showMobileMenuToggle={true}
       mobileMenuOpen={mobileChatOpen}
       onToggleMobileMenu={toggleMobileChatSidebar}
@@ -4745,7 +4731,7 @@
         in:fade={{ duration: 300 }}
       >
         <div
-          class="flex-1 relative bg-exo-dark-gray/40 rounded-lg overflow-hidden"
+          class="flex-1 relative bg-exo-dark-gray rounded-lg overflow-hidden"
         >
           <TopologyGraph
             class="w-full h-full"
@@ -4870,7 +4856,7 @@
         <div class="flex-1 flex flex-col min-h-0 min-w-0 py-4">
           <!-- Topology Container - Takes most of the space -->
           <div
-            class="flex-1 relative bg-exo-dark-gray/40 mx-4 mb-4 rounded-lg overflow-hidden"
+            class="flex-1 relative bg-exo-dark-gray mx-4 mb-4 rounded-lg overflow-hidden"
           >
             <!-- The main topology graph - full container -->
             <TopologyGraph
@@ -5055,14 +5041,39 @@
         {/if}
 
         <!-- Right Sidebar: Instance Controls (wider on welcome page for better visibility) - Desktop only -->
+        {#if rightSidebarOpen}
         <aside
           class="hidden md:flex w-80 border-l border-exo-yellow/10 bg-exo-dark-gray flex-col flex-shrink-0"
           aria-label="Instance controls"
         >
           {@render rightSidebarContent()}
         </aside>
+        {/if}
 
         {#snippet rightSidebarContent()}
+          <!-- Collapse button -->
+          <div class="flex justify-end px-4 pt-3 pb-0">
+            <button
+              onclick={toggleRightSidebarVisible}
+              class="p-1.5 rounded border border-exo-light-gray/20 hover:border-exo-yellow/50 hover:bg-exo-medium-gray/30 transition-colors cursor-pointer"
+              title="Collapse panel"
+              aria-label="Collapse instance panel"
+            >
+              <svg
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+                class="w-4 h-4 text-exo-yellow"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M13 5l7 7-7 7M5 5l7 7-7 7"
+                ></path>
+              </svg>
+            </button>
+          </div>
           <!-- Running Instances Panel (only shown when instances exist) - Scrollable -->
           {#if instanceCount > 0}
             <div class="p-4 flex-shrink-0">
@@ -5940,26 +5951,28 @@
                     {/each}
                   </div>
     {:else if selectedModel}
-      {@const hasErrorPreviews = previewsData.some(
-        (p) =>
-          p.sharding === selectedSharding &&
-          matchesSelectedRuntime(p.instance_meta) &&
-          p.error !== null,
-      )}
-      <div class="text-center py-4">
-        {#if hasErrorPreviews}
-          <div class="text-xs text-red-400 font-mono">
-            Configuration error: Check console for details
-          </div>
-          <div class="text-[10px] text-white/30 font-mono mt-1">
-            Current sharding/interconnect combination not supported
-          </div>
-        {:else}
-          <div class="text-xs text-white/50 font-mono">
-            No valid configurations for current settings
-          </div>
-        {/if}
-      </div>
+{@const errorPreviews = previewsData.filter(
+(p) =>
+p.sharding === selectedSharding &&
+matchesSelectedRuntime(p.instance_meta) &&
+p.error !== null,
+)}
+{@const hasErrorPreviews = errorPreviews.length > 0}
+<div class="text-center py-4">
+{#if hasErrorPreviews}
+{@const firstError = errorPreviews[0].error}
+<div class="text-xs text-red-400 font-mono">
+Configuration error
+</div>
+<div class="text-[10px] text-white/50 font-mono mt-1 max-w-xs mx-auto break-words">
+{firstError}
+</div>
+{:else}
+<div class="text-xs text-white/50 font-mono">
+No valid configurations for current settings
+</div>
+{/if}
+</div>
     {/if}
               {/if}
             </div>
@@ -6179,12 +6192,35 @@
         </div>
 
         <!-- Right: Mini-Map Sidebar - Desktop only -->
-        {#if minimized}
+        {#if minimized && rightSidebarOpen}
           <aside
             class="hidden md:flex w-80 border-l border-exo-yellow/20 bg-exo-dark-gray flex-col flex-shrink-0 overflow-y-auto"
             in:fly={{ x: 100, duration: 400, easing: cubicInOut }}
             aria-label="Cluster topology"
           >
+            <!-- Collapse button -->
+            <div class="flex justify-end px-4 pt-3 pb-0">
+              <button
+                onclick={toggleRightSidebarVisible}
+                class="p-1.5 rounded border border-exo-light-gray/20 hover:border-exo-yellow/50 hover:bg-exo-medium-gray/30 transition-colors cursor-pointer"
+                title="Collapse panel"
+                aria-label="Collapse cluster topology"
+              >
+                <svg
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  class="w-4 h-4 text-exo-yellow"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M13 5l7 7-7 7M5 5l7 7-7 7"
+                  ></path>
+                </svg>
+              </button>
+            </div>
             <!-- Topology Section - clickable to go back to main view -->
             <button
               class="p-4 border-b border-exo-medium-gray/30 w-full text-left cursor-pointer hover:bg-exo-medium-gray/10 transition-colors"
@@ -6740,6 +6776,52 @@
       </div>
     {/if}
   </main>
+
+  <!-- Re-expand buttons when sidebars are collapsed -->
+  {#if !topologyOnlyEnabled && !sidebarVisible}
+    <button
+      onclick={toggleChatSidebarVisible}
+      class="fixed left-0 top-1/2 -translate-y-1/2 z-30 p-2 rounded-r border border-exo-light-gray/20 border-l-0 hover:border-exo-yellow/50 hover:bg-exo-medium-gray/30 transition-colors cursor-pointer bg-exo-dark-gray/80 backdrop-blur-sm"
+      title="Show sidebar"
+      aria-label="Show conversation sidebar"
+    >
+      <svg
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+        class="w-4 h-4 text-exo-yellow"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M13 5l7 7-7 7M5 5l7 7-7 7"
+        ></path>
+      </svg>
+    </button>
+  {/if}
+  {#if !topologyOnlyEnabled && !rightSidebarOpen}
+    <button
+      onclick={toggleRightSidebarVisible}
+      class="fixed right-0 top-1/2 -translate-y-1/2 z-30 p-2 rounded-l border border-exo-light-gray/20 border-r-0 hover:border-exo-yellow/50 hover:bg-exo-medium-gray/30 transition-colors cursor-pointer bg-exo-dark-gray/80 backdrop-blur-sm"
+      title="Show panel"
+      aria-label="Show instance panel"
+    >
+      <svg
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+        class="w-4 h-4 text-exo-yellow"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
+        ></path>
+      </svg>
+    </button>
+  {/if}
 </div>
 
 {#if !showOnboarding}
