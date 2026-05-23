@@ -44,6 +44,8 @@
   let editingName = $state("");
   let deleteConfirmId = $state<string | null>(null);
   let showDeleteAllConfirm = $state(false);
+  let shuttingDown = $state(false);
+  let restarting = $state(false);
 
   const filteredConversations = $derived(
     searchQuery.trim()
@@ -561,6 +563,7 @@
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          stroke-width="2"
         >
           <path
             stroke-linecap="round"
@@ -580,6 +583,34 @@
     >
       <button
         type="button"
+        onclick={() => { shuttingDown = true; fetch('/shutdown', { method: 'POST' }).then(() => { setTimeout(() => location.reload(), 2000); }).catch(() => {}); }}
+        class="p-1.5 rounded border border-red-500/40 hover:border-red-500 text-red-400/70 hover:text-red-400 transition-colors cursor-pointer disabled:opacity-40"
+        title="Stop EXO process"
+        disabled={shuttingDown || restarting}
+      >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        onclick={() => { restarting = true; fetch('/restart', { method: 'POST' }).catch(() => {}); }}
+        class="p-1.5 rounded border border-exo-green/50 hover:border-exo-green text-exo-green/70 hover:text-exo-green transition-colors cursor-pointer disabled:opacity-40"
+        title="Restart all 3 nodes"
+        disabled={shuttingDown || restarting}
+      >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+      </button>
+      <div class="text-xs text-white/60 font-mono tracking-wider text-center">
+        {conversationList.length} CONVERSATION{conversationList.length !== 1
+          ? "S"
+          : ""}
+      </div>
+      <button
+        type="button"
         onclick={toggleDebugMode}
         class="p-1.5 rounded border border-exo-green/50 hover:border-exo-green text-exo-green/70 hover:text-exo-green transition-colors cursor-pointer"
         title="Toggle debug mode"
@@ -596,11 +627,6 @@
           />
         </svg>
       </button>
-      <div class="text-xs text-white/60 font-mono tracking-wider text-center">
-        {conversationList.length} CONVERSATION{conversationList.length !== 1
-          ? "S"
-          : ""}
-      </div>
       <button
         type="button"
         onclick={toggleTopologyOnlyMode}

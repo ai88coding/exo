@@ -2,7 +2,9 @@ import base64
 import contextlib
 import hashlib
 import json
+import os
 import random
+import signal
 import time
 from collections.abc import AsyncGenerator, Awaitable, Callable, Iterable
 from datetime import datetime, timezone
@@ -405,6 +407,38 @@ class API:
         self.app.get("/v1/traces/{task_id}/raw")(self.get_trace_raw)
         self.app.get("/onboarding")(self.get_onboarding)
         self.app.post("/onboarding")(self.complete_onboarding)
+        self.app.post("/shutdown")(self.handle_shutdown)
+        self.app.post("/restart")(self.handle_restart)
+
+    async def handle_shutdown(self) -> JSONResponse:
+        async def _delayed_shutdown():
+            await anyio.sleep(0.5)
+            import subprocess
+            subprocess.Popen(
+                ["bash", "/Users/wilson/exo/scripts/stop-cluster.sh"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            os.kill(os.getpid(), signal.SIGTERM)
+
+        import asyncio
+        asyncio.create_task(_delayed_shutdown())
+        return JSONResponse({"status": "shutting_down"})
+
+    async def handle_restart(self) -> JSONResponse:
+        async def _delayed_restart():
+            await anyio.sleep(0.5)
+            import subprocess
+            subprocess.Popen(
+                ["bash", "/Users/wilson/exo/scripts/restart-cluster.sh"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            os.kill(os.getpid(), signal.SIGTERM)
+
+        import asyncio
+        asyncio.create_task(_delayed_restart())
+        return JSONResponse({"status": "restarting"})
 
     def get_state(self, path: str = ""):
         if path == "":

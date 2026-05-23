@@ -256,13 +256,16 @@ class DownloadCoordinator:
             # rsync default model dir to get the model from Mac
             src = os.environ.get("EXO_RSYNC_MODEL_SOURCE", "")
             if src:
-                # We'll try two possible source paths on the Mac:
-                # 1. src + "/" + model_id
-                # 2. src + "/" + model_name_only (where model_name_only is the part after the last '/')
+                # We'll try three possible source paths on the Mac:
+                # 1. src + "/" + model_id (e.g. mlx-community/MiniMax-M2.5-4bit)
+                # 2. src + "/" + model_name_only (e.g. MiniMax-M2.5-4bit)
+                # 3. src + "/" + model_id with "/" replaced by "--" (e.g. mlx-community--MiniMax-M2.5-4bit)
                 model_name_only = model_id.split("/")[-1] if "/" in model_id else model_id
+                model_path_hyphenated = model_id.replace("/", "--")
                 source_paths = [
                     f"{src.rstrip('/')}/{model_id}",
-                    f"{src.rstrip('/')}/{model_name_only}"
+                    f"{src.rstrip('/')}/{model_name_only}",
+                    f"{src.rstrip('/')}/{model_path_hyphenated}",
                 ]
                 # We'll try each source path until one succeeds
                 pulled_successfully = False

@@ -5052,7 +5052,7 @@ FireworksBackground,
 
         {#snippet rightSidebarContent()}
           <!-- Collapse button -->
-          <div class="flex justify-end px-4 pt-3 pb-0">
+          <div class="flex justify-start px-4 pt-3 pb-0">
             <button
               onclick={toggleRightSidebarVisible}
               class="p-1.5 rounded border border-exo-light-gray/20 hover:border-exo-yellow/50 hover:bg-exo-medium-gray/30 transition-colors cursor-pointer"
@@ -6199,7 +6199,7 @@ No valid configurations for current settings
             aria-label="Cluster topology"
           >
             <!-- Collapse button -->
-            <div class="flex justify-end px-4 pt-3 pb-0">
+            <div class="flex justify-start px-4 pt-3 pb-0">
               <button
                 onclick={toggleRightSidebarVisible}
                 class="p-1.5 rounded border border-exo-light-gray/20 hover:border-exo-yellow/50 hover:bg-exo-medium-gray/30 transition-colors cursor-pointer"
@@ -6781,7 +6781,7 @@ No valid configurations for current settings
   {#if !topologyOnlyEnabled && !sidebarVisible}
     <button
       onclick={toggleChatSidebarVisible}
-      class="fixed left-0 top-1/2 -translate-y-1/2 z-30 p-2 rounded-r border border-exo-light-gray/20 border-l-0 hover:border-exo-yellow/50 hover:bg-exo-medium-gray/30 transition-colors cursor-pointer bg-exo-dark-gray/80 backdrop-blur-sm"
+      class="fixed left-0 top-[80px] z-30 p-2 rounded-r border border-exo-light-gray/20 border-l-0 hover:border-exo-yellow/50 hover:bg-exo-medium-gray/30 transition-colors cursor-pointer bg-exo-dark-gray/80 backdrop-blur-sm"
       title="Show sidebar"
       aria-label="Show conversation sidebar"
     >
@@ -6803,7 +6803,7 @@ No valid configurations for current settings
   {#if !topologyOnlyEnabled && !rightSidebarOpen}
     <button
       onclick={toggleRightSidebarVisible}
-      class="fixed right-0 top-1/2 -translate-y-1/2 z-30 p-2 rounded-l border border-exo-light-gray/20 border-r-0 hover:border-exo-yellow/50 hover:bg-exo-medium-gray/30 transition-colors cursor-pointer bg-exo-dark-gray/80 backdrop-blur-sm"
+      class="fixed right-0 top-[80px] z-30 p-2 rounded-l border border-exo-light-gray/20 border-r-0 hover:border-exo-yellow/50 hover:bg-exo-medium-gray/30 transition-colors cursor-pointer bg-exo-dark-gray/80 backdrop-blur-sm"
       title="Show panel"
       aria-label="Show instance panel"
     >

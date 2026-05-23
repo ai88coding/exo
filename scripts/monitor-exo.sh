@@ -1,5 +1,5 @@
 #!/bin/bash
-# EXO 守護進程 v3.1 - 快速選舉檢測 + 舊進程清理
+# EXO 守護進程 v3.3 - 穩定版：PID 存活優先判斷，移除誤判記憶體檢查
 set -u
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,14 +10,10 @@ MAX_RETRIES=5
 RETRY_DELAY=10
 HEALTH_CHECK_PORT="52415"
 
-# === 快速恢復參數 ===
-# 每 10 秒檢測一次選舉循環（立刻發現死機）
-# 每 30 秒檢測節點狀態（2分鐘無節點就重啟）
 CHECK_INTERVAL=10
 PEER_CHECK_INTERVAL=3
-MAX_PEER_ABSENT_CYCLES=4
-# 如果日誌超過 15 分鐘沒更新，視為卡死（太短會誤殺正常 Nack 處理）
-LOG_STALE_TIMEOUT=900
+MAX_PEER_ABSENT_CYCLES=10
+LOG_STALE_TIMEOUT=3000
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
   ROLE="mac"
@@ -30,7 +26,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 else
   ROLE="worker"
   export EXO_LIBP2P_NAMESPACE="wilson-cluster"
-  export EXO_RSYNC_MODEL_SOURCE="wilson@192.168.8.250:/Users/wilson/.lmstudio/models/"
+  export EXO_RSYNC_MODEL_SOURCE="wilson@192.168.8.250:/Users/wilson/.exo/models/"
   export EXO_MODEL_SOURCE="rsync-only"
   export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/home/admin/.local/bin:/usr/local/bin"
   EXO_CMD="/home/admin/exo/.venv/bin/exo"
@@ -75,61 +71,6 @@ check_log_stale() {
     return 1
   fi
   return 0
-}
-
-check_election_loop() {
-  if [ ! -f "$LOG_FILE" ]; then return 0; fi
-
-  local election_count=$(tail -50 "$LOG_FILE" 2>/dev/null | grep -c "elected master\|Cancelling other campaign\|Waiting for other campaign" 2>/dev/null)
-  if [ "$election_count" -ge 6 ]; then
-    log "選舉循環 (${election_count}次/50行)"
-    return 1
-  fi
-  return 0
-}
-
-check_mac_alive() {
-  if [ "$ROLE" != "worker" ]; then return 0; fi
-
-  local state=$(curl -s "http://localhost:$HEALTH_CHECK_PORT/state" 2>/dev/null)
-  if [ -z "$state" ]; then return 2; fi
-
-  local last_event_idx=$(echo "$state" | python3 -c "
-import sys, json
-try:
-  d = json.load(sys.stdin)
-  print(d.get('lastEventAppliedIdx', 0))
-except: print(0)
-" 2>/dev/null)
-
-  local initial_idx=$(cat /tmp/exo_initial_idx 2>/dev/null || echo "0")
-
-  if [ "$initial_idx" = "0" ]; then
-    echo "$last_event_idx" > /tmp/exo_initial_idx
-    return 0
-  fi
-
-  if [ "$last_event_idx" = "$current_idx_prev" ] 2>/dev/null; then
-    return 1
-  fi
-
-  local current_idx_prev=$last_event_idx
-  return 0
-}
-
-check_resources() {
-  local mem_available=0; local mem_total=0
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    mem_total=$(sysctl -n hw.memsize 2>/dev/null | awk '{printf "%.0f", $1/1024/1024}')
-    mem_available=$(vm_stat 2>/dev/null | awk '/Pages free/ {print $3}' | cut -d'.' -f1)
-    mem_available=$((mem_available * 4 / 1024))
-  else
-    mem_available=$(free -m | awk '/^Mem:/ {print $7}')
-    mem_total=$(free -m | awk '/^Mem:/ {print $2}')
-  fi
-  if [ "$mem_available" -lt 5000 ]; then
-    log "記憶體不足 ${mem_available}MB / ${mem_total}MB"
-  fi
 }
 
 cleanup() {
@@ -180,7 +121,7 @@ kill_old_monitors() {
 }
 
 main() {
-  log "=== EXO 守護進程 v3.1 啟動 ==="
+  log "=== EXO 守護進程 v3.3 啟動 ==="
   log "角色: $ROLE | 目錄: $CD_DIR"
 
   kill_old_monitors
@@ -188,6 +129,7 @@ main() {
   local check_count=0
   local peer_absent_cycles=0
   local init_delay_done=0
+  local startup_grace_done=0
 
   while true; do
     check_count=$((check_count + 1))
@@ -223,13 +165,9 @@ main() {
       continue
     fi
 
-    # 資源檢查（每 4 次 = ~40s）
-    if [ $((check_count % 4)) -eq 0 ]; then
-      check_resources
-    fi
-
-    # 節點連接檢查（每 3 次 = ~30s）
-    if [ $((check_count % PEER_CHECK_INTERVAL)) -eq 0 ]; then
+    if [ $startup_grace_done -eq 0 ] && [ $check_count -ge 12 ]; then
+      startup_grace_done=1
+      log "啟動寬限期結束，開始節點檢查"
       check_peers
       local peer_ok=$?
 
