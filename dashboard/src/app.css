@@ -4,48 +4,47 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-	/* Mac Spark Brand Colors - NVIDIA DGX Dark Green + Warm Gold Accents */
+	/* NVIDIA DGX Spark inspired theme */
 	--nv-green: #76b900;
 	--nv-green-bright: #a2e000;
 	--nv-green-dim: oklch(0.55 0.18 140);
-	--exo-black: oklch(0.06 0 0);
-	--exo-dark-gray: oklch(0.1 0 0);
-	--exo-medium-gray: oklch(0.2 0 0);
-	--exo-light-gray: oklch(0.65 0 0);
-	--exo-green: var(--nv-green);
-	--exo-gold: #c9a84c;
-	--exo-gold-bright: #f0d080;
-	--exo-teal: #40c9aa;
-	--exo-purple: #9b7ec9;
-	--exo-green-bright: var(--nv-green-bright);
-	--exo-green-dim: var(--nv-green-dim);
+	--nv-gold: #f9c500;
+	--nv-red: #e52020;
+	--nv-bg: #000;
+	--nv-surface: #0c0c0c;
+	--nv-card: rgba(255, 255, 255, 0.03);
+	--nv-border: rgba(255, 255, 255, 0.08);
+	--nv-border-hover: rgba(255, 255, 255, 0.15);
+	--nv-text: #e0e0e0;
+	--nv-text-dim: #636363;
+	--nv-text-bright: #ffffff;
 
-	/* Accent colors */
-	--exo-grid: oklch(0.18 0 0);
-	--exo-scanline: oklch(0.08 0 0);
-	--exo-glow-green: 0 0 20px rgba(118, 185, 0, 0.3);
-	--exo-glow-gold: 0 0 16px rgba(201, 168, 76, 0.3);
-	--exo-glow-teal: 0 0 16px rgba(64, 201, 170, 0.3);
-	
+	--exo-black: #000;
+	--exo-dark-gray: #0c0c0c;
+	--exo-medium-gray: #1a1a1a;
+	--exo-light-gray: #636363;
+	--exo-green: var(--nv-green);
+	--exo-green-bright: var(--nv-green-bright);
+
 	/* Theme Variables */
 	--radius: 0.5rem;
-	--background: var(--exo-black);
-	--foreground: #e0e0e0;
-	--card: var(--exo-dark-gray);
-	--card-foreground: #e0e0e0;
-	--popover: var(--exo-dark-gray);
-	--popover-foreground: #e0e0e0;
+	--background: var(--nv-bg);
+	--foreground: var(--nv-text);
+	--card: var(--nv-card);
+	--card-foreground: var(--nv-text);
+	--popover: var(--nv-surface);
+	--popover-foreground: var(--nv-text);
 	--primary: var(--nv-green);
 	--primary-foreground: #000;
-	--secondary: var(--exo-medium-gray);
-	--secondary-foreground: #e0e0e0;
-	--muted: var(--exo-medium-gray);
-	--muted-foreground: #636363;
-	--accent: var(--exo-medium-gray);
-	--accent-foreground: #e0e0e0;
-	--destructive: #e52020;
-	--border: rgba(255, 255, 255, 0.08);
-	--input: rgba(255, 255, 255, 0.08);
+	--secondary: var(--nv-surface);
+	--secondary-foreground: var(--nv-text);
+	--muted: var(--nv-surface);
+	--muted-foreground: var(--nv-text-dim);
+	--accent: rgba(255, 255, 255, 0.06);
+	--accent-foreground: var(--nv-text);
+	--destructive: var(--nv-red);
+	--border: var(--nv-border);
+	--input: var(--nv-border);
 	--ring: var(--nv-green);
 }
 
@@ -72,14 +71,16 @@
 	--color-border: var(--border);
 	--color-input: var(--input);
 	--color-ring: var(--ring);
-	
-	/* Custom Mac Spark colors */
+
+	/* Custom colors */
 	--color-exo-green: var(--nv-green);
 	--color-exo-green-bright: var(--nv-green-bright);
-	--color-exo-black: var(--exo-black);
-	--color-exo-dark-gray: var(--exo-dark-gray);
-	--color-exo-medium-gray: var(--exo-medium-gray);
-	--color-exo-light-gray: var(--exo-light-gray);
+	--color-exo-black: #000;
+	--color-exo-dark-gray: #0c0c0c;
+	--color-exo-medium-gray: #1a1a1a;
+	--color-exo-light-gray: var(--nv-text-dim);
+	--color-nv-gold: var(--nv-gold);
+	--color-nv-red: var(--nv-red);
 }
 
 @layer base {
@@ -88,7 +89,10 @@
 	}
 	html, body {
 		@apply bg-background text-foreground;
-		font-family: 'SF Mono', 'Fira Code', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
+		background-image: radial-gradient(ellipse at top left, rgba(118, 185, 0, 0.08) 0%, transparent 60%);
+		background-size: 800px 800px;
+		background-repeat: no-repeat;
+		font-family: 'SF Pro Display', 'NVIDIA Sans', 'Segoe UI', 'Noto Sans TC', system-ui, sans-serif;
 		letter-spacing: 0.02em;
 	}
 }

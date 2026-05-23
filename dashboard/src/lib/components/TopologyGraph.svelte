@@ -964,142 +964,143 @@
             .attr("rx", 2);
         }
 
-        // GPU Stats Text (centered on bar, multiline, bigger and bold)
-        const gpuTextX = gpuBarX + gpuBarWidth / 2;
-        const gpuTextY = gpuBarY + gpuBarHeight / 2;
-        const gpuTextFontSize = isMinimized
-          ? Math.max(10, gpuBarWidth * 0.6)
-          : Math.min(16, Math.max(12, gpuBarWidth * 0.55));
-        const lineSpacing = gpuTextFontSize * 1.25;
+    // GPU Stats Text (centered on bar, multiline, bigger and bold)
+    const gpuTextX = gpuBarX + gpuBarWidth / 2;
+    const gpuTextY = gpuBarY + gpuBarHeight / 2;
+    const gpuTextFontSize = isMinimized
+      ? Math.max(10, gpuBarWidth * 0.6)
+      : Math.min(16, Math.max(12, gpuBarWidth * 0.55));
+    const tempFontSize = gpuTextFontSize * 0.75;
+    const lineSpacing = gpuTextFontSize * 1.25;
 
-        const gpuUsageText = `${gpuUsagePercent.toFixed(0)}%`;
-        const tempText = !isNaN(gpuTemp) ? `${gpuTemp.toFixed(0)}°C` : "-";
-        const powerText = sysPower !== null ? `${sysPower.toFixed(0)}W` : "-";
+    const gpuUsageText = `${gpuUsagePercent.toFixed(0)}%`;
+    const tempText = !isNaN(gpuTemp) ? `${gpuTemp.toFixed(0)}°C` : "-";
+    const powerText = sysPower !== null ? `${sysPower.toFixed(0)}W` : "-";
 
-        // GPU Usage %
-        nodeG
-          .append("text")
-          .attr("x", gpuTextX)
-          .attr("y", gpuTextY - lineSpacing)
-          .attr("text-anchor", "middle")
-          .attr("dominant-baseline", "middle")
-          .attr("fill", "#FFFFFF")
-          .attr("font-size", gpuTextFontSize)
-          .attr("font-weight", "700")
-          .attr("font-family", "SF Mono, Monaco, monospace")
-          .text(gpuUsageText);
+    // GPU Usage %
+    nodeG
+      .append("text")
+      .attr("x", gpuTextX)
+      .attr("y", gpuTextY - lineSpacing)
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
+      .attr("fill", "#FFFFFF")
+      .attr("font-size", gpuTextFontSize)
+      .attr("font-weight", "700")
+      .attr("font-family", "SF Mono, Monaco, monospace")
+      .text(gpuUsageText);
 
-        // Temperature
-        nodeG
-          .append("text")
-          .attr("x", gpuTextX)
-          .attr("y", gpuTextY)
-          .attr("text-anchor", "middle")
-          .attr("dominant-baseline", "middle")
-          .attr("fill", "#FFFFFF")
-          .attr("font-size", gpuTextFontSize)
-          .attr("font-weight", "700")
-          .attr("font-family", "SF Mono, Monaco, monospace")
-          .text(tempText);
+    // Temperature (25% smaller)
+    nodeG
+      .append("text")
+      .attr("x", gpuTextX)
+      .attr("y", gpuTextY)
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
+      .attr("fill", "#FFFFFF")
+      .attr("font-size", tempFontSize)
+      .attr("font-weight", "700")
+      .attr("font-family", "SF Mono, Monaco, monospace")
+      .text(tempText);
 
-        // Power (Watts)
-        nodeG
-          .append("text")
-          .attr("x", gpuTextX)
-          .attr("y", gpuTextY + lineSpacing)
-          .attr("text-anchor", "middle")
-          .attr("dominant-baseline", "middle")
-          .attr("fill", "#FFFFFF")
-          .attr("font-size", gpuTextFontSize)
-          .attr("font-weight", "700")
-          .attr("font-family", "SF Mono, Monaco, monospace")
-          .text(powerText);
+    // Power (Watts)
+    nodeG
+      .append("text")
+      .attr("x", gpuTextX)
+      .attr("y", gpuTextY + lineSpacing)
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
+      .attr("fill", "#FFFFFF")
+      .attr("font-size", gpuTextFontSize)
+      .attr("font-weight", "700")
+      .attr("font-family", "SF Mono, Monaco, monospace")
+      .text(powerText);
       }
 
-      // Labels - adapt based on mode
-      if (showFullLabels) {
-        // FULL MODE: Name above, memory info below (1-4 nodes)
-        const nameY = nodeInfo.y - iconBaseHeight / 2 - 15;
-        const fontSize = Math.max(10, nodeRadius * 0.16);
+    // Labels - adapt based on mode
+    if (showFullLabels) {
+      // FULL MODE: Name above, memory info below (1-4 nodes)
+      const nameY = nodeInfo.y - iconBaseHeight / 2 - 15;
+      const fontSize = Math.max(10, nodeRadius * 0.16 * 1.25);
 
-        // Truncate name based on node count
-        const maxNameLen =
-          numNodes === 1 ? 22 : numNodes === 2 ? 18 : numNodes === 3 ? 16 : 14;
-        const displayName =
-          friendlyName.length > maxNameLen
-            ? friendlyName.slice(0, maxNameLen - 2) + ".."
-            : friendlyName;
+      // Truncate name based on node count
+      const maxNameLen =
+        numNodes === 1 ? 22 : numNodes === 2 ? 18 : numNodes === 3 ? 16 : 14;
+      const displayName =
+        friendlyName.length > maxNameLen
+          ? friendlyName.slice(0, maxNameLen - 2) + ".."
+          : friendlyName;
 
-        // Name label above
-        nodeG
-          .append("text")
-          .attr("x", nodeInfo.x)
-          .attr("y", nameY)
-          .attr("text-anchor", "middle")
-          .attr("dominant-baseline", "middle")
-          .attr("fill", "#FFD700")
-          .attr("font-size", fontSize)
-          .attr("font-weight", 500)
-          .attr("font-family", "SF Mono, Monaco, monospace")
-          .text(displayName);
+      // Name label above
+      nodeG
+        .append("text")
+        .attr("x", nodeInfo.x)
+        .attr("y", nameY)
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "middle")
+        .attr("fill", "#FFD700")
+        .attr("font-size", fontSize)
+        .attr("font-weight", 500)
+        .attr("font-family", "SF Mono, Monaco, monospace")
+        .text(displayName);
 
-        // Memory info below - used in grey, total in yellow
-        const infoY = nodeInfo.y + iconBaseHeight / 2 + 16;
-        const memText = nodeG
-          .append("text")
-          .attr("x", nodeInfo.x)
-          .attr("y", infoY)
-          .attr("text-anchor", "middle")
-          .attr("font-size", fontSize * 0.85)
-          .attr("font-family", "SF Mono, Monaco, monospace");
-        memText
-          .append("tspan")
-          .attr("fill", "rgba(118,185,0,0.9)")
-          .text(`${formatBytes(ramUsed)}`);
-        memText
-          .append("tspan")
-          .attr("fill", "rgba(179,179,179,0.9)")
-          .text(`/${formatBytes(ramTotal)}`);
-        memText
-          .append("tspan")
-          .attr("fill", "rgba(179,179,179,0.7)")
-          .text(` (${ramUsagePercent.toFixed(0)}%)`);
-      } else if (showCompactLabels) {
-        // COMPACT MODE: Just name and basic info (4+ nodes)
-        const fontSize = Math.max(7, nodeRadius * 0.11);
+      // Memory info below - used in grey, total in yellow
+      const infoY = nodeInfo.y + iconBaseHeight / 2 + 16;
+      const memText = nodeG
+        .append("text")
+        .attr("x", nodeInfo.x)
+        .attr("y", infoY)
+        .attr("text-anchor", "middle")
+        .attr("font-size", fontSize * 0.85)
+        .attr("font-family", "SF Mono, Monaco, monospace");
+      memText
+        .append("tspan")
+        .attr("fill", "rgba(118,185,0,0.9)")
+        .text(`${formatBytes(ramUsed)}`);
+      memText
+        .append("tspan")
+        .attr("fill", "rgba(179,179,179,0.9)")
+        .text(`/${formatBytes(ramTotal)}`);
+      memText
+        .append("tspan")
+        .attr("fill", "rgba(179,179,179,0.7)")
+        .text(` (${ramUsagePercent.toFixed(0)}%)`);
+    } else if (showCompactLabels) {
+      // COMPACT MODE: Just name and basic info (4+ nodes)
+      const fontSize = Math.max(7, nodeRadius * 0.11 * 1.25);
 
-        // Very compact name below icon
-        const nameY = nodeInfo.y + iconBaseHeight / 2 + 9;
-        const shortName =
-          friendlyName.length > 10
-            ? friendlyName.slice(0, 8) + ".."
-            : friendlyName;
-        nodeG
-          .append("text")
-          .attr("x", nodeInfo.x)
-          .attr("y", nameY)
-          .attr("text-anchor", "middle")
-          .attr("fill", "#FFD700")
-          .attr("font-size", fontSize)
-          .attr("font-family", "SF Mono, Monaco, monospace")
-          .text(shortName);
+      // Very compact name below icon
+      const nameY = nodeInfo.y + iconBaseHeight / 2 + 9;
+      const shortName =
+        friendlyName.length > 10
+          ? friendlyName.slice(0, 8) + ".."
+          : friendlyName;
+      nodeG
+        .append("text")
+        .attr("x", nodeInfo.x)
+        .attr("y", nameY)
+        .attr("text-anchor", "middle")
+        .attr("fill", "#FFD700")
+        .attr("font-size", fontSize)
+        .attr("font-family", "SF Mono, Monaco, monospace")
+        .text(shortName);
 
-        // Single line of key stats
-        const statsY = nameY + 9;
-        nodeG
-          .append("text")
-          .attr("x", nodeInfo.x)
-          .attr("y", statsY)
-          .attr("text-anchor", "middle")
-          .attr("fill", "rgba(118,185,0,0.7)")
-          .attr("font-size", fontSize * 0.85)
-          .attr("font-family", "SF Mono, Monaco, monospace")
-          .text(
-            `${ramUsagePercent.toFixed(0)}%${!isNaN(gpuTemp) ? " " + gpuTemp.toFixed(0) + "°C" : ""}`,
-          );
-      } else {
-        // MINIMIZED MODE: Show name above and memory info below (like main topology)
-        const fontSize = 8;
+      // Single line of key stats
+      const statsY = nameY + 9;
+      nodeG
+        .append("text")
+        .attr("x", nodeInfo.x)
+        .attr("y", statsY)
+        .attr("text-anchor", "middle")
+        .attr("fill", "rgba(118,185,0,0.7)")
+        .attr("font-size", fontSize * 0.75)
+        .attr("font-family", "SF Mono, Monaco, monospace")
+        .text(
+          `${ramUsagePercent.toFixed(0)}%${!isNaN(gpuTemp) ? " " + gpuTemp.toFixed(0) + "°C" : ""}`,
+        );
+    } else {
+      // MINIMIZED MODE: Show name above and memory info below (like main topology)
+      const fontSize = 8 * 1.25;
 
         // Friendly name (shortened) above icon
         const nameY = nodeInfo.y - iconBaseHeight / 2 - 8;

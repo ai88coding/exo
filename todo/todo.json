@@ -1,0 +1,12 @@
+{
+  "title": "EXO 3-Node 混合集群 — Direction A: MLX CUDA",
+  "items": [
+    {"id": 1, "text": "等待 Spark CPU warmup 完成", "status": "completed"},
+    {"id": 2, "text": "確認 sparkb CUDA 環境 (nvidia-smi)", "status": "in_progress"},
+    {"id": 3, "text": "sparkb 安裝 mlx-cuda-12 + EXO main", "status": "pending"},
+    {"id": 4, "text": "測試 sparkb MLX CUDA standalone inference", "status": "pending"},
+    {"id": 5, "text": "Mac + sparkb 2-node MLX distributed ring 測試", "status": "pending"},
+    {"id": 6, "text": "sparka 重建 + 加入 3-node 集群", "status": "pending"},
+    {"id": 7, "text": "驗證 distributed inference 正確性", "status": "pending"}
+  ]
+}

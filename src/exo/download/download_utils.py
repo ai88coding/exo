@@ -160,9 +160,17 @@ def resolve_existing_model(
     """
     normalized = model_id.normalize()
     for search_dir in (*EXO_MODELS_READ_ONLY_DIRS, *EXO_MODELS_DIRS):
+        # Check normalized path first (e.g. mlx-community--Qwen3.6-...)
         candidate = search_dir / normalized
         if candidate.is_dir() and is_model_directory_complete(candidate, card):
             return candidate
+        # Also check non-normalized path (e.g. mlx-community/Qwen3.6-...)
+        # This is needed for rsync-only mode where Mac stores models in HF structure
+        parts = model_id.split("/")
+        if len(parts) >= 2:
+            non_normalized = search_dir / "/".join(parts)
+            if non_normalized.is_dir() and is_model_directory_complete(non_normalized, card):
+                return non_normalized
     return None
 
 

@@ -22,6 +22,7 @@ from hypercorn.config import Config
 from hypercorn.typing import ASGIFramework
 from hypercorn.utils import LifespanTimeoutError
 from loguru import logger
+from exo.download.download_utils import resolve_existing_model
 
 from exo.api.adapters.chat_completions import (
     chat_request_to_text_generation,

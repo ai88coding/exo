@@ -68,12 +68,69 @@
 </script>
 
 <header
-  class="relative z-20 flex items-center justify-center px-4 md:px-6 pt-4 md:pt-8 pb-3 md:pb-4 bg-exo-dark-gray"
+  class="relative z-20 flex items-center justify-between px-4 md:px-6 pt-4 md:pt-8 pb-3 md:pb-4 bg-exo-dark-gray"
 >
-  <!-- Left: Sidebar Toggle (desktop) or Mobile Sidebar Toggle (mobile) -->
-  <div
-    class="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 flex items-center gap-2"
+  <!-- Logo (clickable to go home) -->
+  <button
+    onclick={handleHome}
+    class="bg-transparent border-none outline-none focus:outline-none transition-opacity duration-200 hover:opacity-90 flex items-center gap-3 {showHome
+      ? 'cursor-pointer'
+      : 'cursor-default'}"
+    title={showHome ? "Go to home" : ""}
+    disabled={!showHome}
   >
+    <svg viewBox="0 0 24 24" fill="none" class="w-9 h-9 drop-shadow-[0_0_8px_rgba(118,185,0,0.4)] flex-shrink-0">
+      <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="none" stroke="#76b900" stroke-width="1.5"/>
+      <path d="M2 17L12 22L22 17" fill="none" stroke="#76b900" stroke-width="1.5" opacity="0.5"/>
+      <path d="M2 12L12 17L22 12" fill="none" stroke="#76b900" stroke-width="1.5" opacity="0.8"/>
+    </svg>
+    <div class="flex flex-col items-start">
+      <span class="text-[clamp(0.9rem,3vw,1.75rem)] font-bold text-white tracking-tight leading-none" style="text-shadow: 0 0 12px rgba(118,185,0,0.4)">Mac Spark</span>
+      <span class="text-[clamp(0.55rem,1.4vw,0.95rem)] text-white/50 font-mono tracking-widest leading-none mt-0.5">數字馬研究室</span>
+    </div>
+  </button>
+
+  <!-- Right: Navigation + Sidebar toggles -->
+  <nav
+    class="ml-auto flex items-center gap-2 md:gap-4"
+    aria-label="Main navigation"
+  >
+    <!-- Mobile right sidebar toggle (instances/models) - only show when not in chat mode -->
+    {#if showMobileRightToggle}
+    <button
+      onclick={handleToggleMobileRight}
+      class="p-2 rounded border border-exo-light-gray/30 hover:border-exo-green/50 hover:bg-exo-medium-gray/30 transition-colors cursor-pointer md:hidden"
+      title={mobileRightOpen ? "Hide instances" : "Show instances"}
+      aria-label={mobileRightOpen
+        ? "Hide instances panel"
+        : "Show instances panel"}
+      aria-pressed={mobileRightOpen}
+    >
+      <svg
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+        class="w-5 h-5 {mobileRightOpen
+          ? 'text-exo-green'
+          : 'text-exo-light-gray'}"
+      >
+        {#if mobileRightOpen}
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M13 5l7 7-7 7M5 5l7 7-7 7"
+          ></path>
+        {:else}
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
+          ></path>
+        {/if}
+      </svg>
+    </button>
+    {/if}
     <!-- Mobile sidebar toggle -->
     <button
       onclick={handleToggleMobileMenu}
@@ -142,90 +199,27 @@
         {/if}
       </svg>
     </button>
-  </div>
-
-  <!-- Center: Logo (clickable to go home) -->
-  <button
-    onclick={handleHome}
-    class="bg-transparent border-none outline-none focus:outline-none transition-opacity duration-200 hover:opacity-90 flex items-center gap-3 {showHome
-      ? 'cursor-pointer'
-      : 'cursor-default'}"
-    title={showHome ? "Go to home" : ""}
-    disabled={!showHome}
-  >
-    <svg viewBox="0 0 24 24" fill="none" class="w-9 h-9 drop-shadow-[0_0_8px_rgba(118,185,0,0.4)] flex-shrink-0">
-      <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="none" stroke="#76b900" stroke-width="1.5"/>
-      <path d="M2 17L12 22L22 17" fill="none" stroke="#76b900" stroke-width="1.5" opacity="0.5"/>
-      <path d="M2 12L12 17L22 12" fill="none" stroke="#76b900" stroke-width="1.5" opacity="0.8"/>
-    </svg>
-    <div class="flex flex-col items-start">
-      <span class="text-[clamp(0.9rem,3vw,1.75rem)] font-bold text-white tracking-tight leading-none" style="text-shadow: 0 0 12px rgba(118,185,0,0.4)">Mac Spark</span>
-      <span class="text-[clamp(0.55rem,1.4vw,0.95rem)] text-white/50 font-mono tracking-widest leading-none mt-0.5">數字馬研究室</span>
-    </div>
-  </button>
-
-  <!-- Right: Home + Downloads + Mobile Right Toggle -->
-  <nav
-    class="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 flex items-center gap-2 md:gap-4"
-    aria-label="Main navigation"
-  >
-    <!-- Mobile right sidebar toggle (instances/models) - only show when not in chat mode -->
-    {#if showMobileRightToggle}
-      <button
-        onclick={handleToggleMobileRight}
-class="p-2 rounded border border-exo-light-gray/30 hover:border-exo-green/50 hover:bg-exo-medium-gray/30 transition-colors cursor-pointer md:hidden"
-        title={mobileRightOpen ? "Hide instances" : "Show instances"}
-        aria-label={mobileRightOpen
-          ? "Hide instances panel"
-          : "Show instances panel"}
-        aria-pressed={mobileRightOpen}
-      >
-        <svg
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-          class="w-5 h-5 {mobileRightOpen
-            ? 'text-exo-green'
-            : 'text-exo-light-gray'}"
-        >
-          {#if mobileRightOpen}
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M13 5l7 7-7 7M5 5l7 7-7 7"
-            ></path>
-          {:else}
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
-            ></path>
-          {/if}
-        </svg>
-      </button>
-    {/if}
     {#if showHome}
-      <button
-        onclick={handleHome}
-        class="flex text-sm text-white/70 hover:text-exo-yellow transition-colors tracking-wider uppercase items-center gap-2 cursor-pointer"
-        title="Back to topology view"
+    <button
+      onclick={handleHome}
+      class="flex text-sm text-white/70 hover:text-exo-yellow transition-colors tracking-wider uppercase items-center gap-2 cursor-pointer"
+      title="Back to topology view"
+    >
+      <svg
+        class="w-4 h-4"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
       >
-        <svg
-          class="w-4 h-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-          />
-        </svg>
-        <span class="hidden sm:inline">Home</span>
-      </button>
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+        />
+      </svg>
+      <span class="hidden sm:inline">Home</span>
+    </button>
     {/if}
     <a
       href="/#/downloads"

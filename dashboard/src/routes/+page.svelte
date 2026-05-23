@@ -3187,14 +3187,14 @@
   const filteredPreviews = $derived(() => {
     if (!selectedModelId || previewsData.length === 0) return [];
 
-    // Find previews matching sharding/instance type (model_id filter not needed since previewsData is already for selected model)
-    const matchingPreviews = previewsData.filter(
-      (p: PlacementPreview) =>
-        p.sharding === selectedSharding &&
-        matchesSelectedRuntime(p.instance_meta) &&
-        p.error === null &&
-        p.memory_delta_by_node !== null,
-    );
+  // Find previews matching sharding/instance type (model_id filter not needed since previewsData is already for selected model)
+  // Include previews with errors so we can show them to the user
+  const matchingPreviews = previewsData.filter(
+    (p: PlacementPreview) =>
+      p.sharding === selectedSharding &&
+      matchesSelectedRuntime(p.instance_meta) &&
+      p.memory_delta_by_node !== null,
+  );
 
     // Filter to previews with node count >= selectedMinNodes, sorted by node count (ascending)
     return matchingPreviews
@@ -5713,52 +5713,52 @@
                       Sharding Strategy:
                     </div>
                     <div class="flex gap-2">
-                      <button
-                        onclick={() => {
-                          selectedSharding = "Pipeline";
-                          saveLaunchDefaults();
-                        }}
-                        class="flex items-center gap-2 py-1.5 px-3 text-xs font-mono border rounded transition-all duration-200 cursor-pointer {selectedSharding ===
-                        'Pipeline'
-                          ? 'bg-transparent text-exo-yellow border-exo-yellow'
-                          : 'bg-transparent text-white/70 border-exo-medium-gray/50 hover:border-exo-yellow/50'}"
-                      >
-                        <span
-                          class="w-3 h-3 rounded-full border-2 flex items-center justify-center {selectedSharding ===
-                          'Pipeline'
-                            ? 'border-exo-yellow'
-                            : 'border-exo-medium-gray'}"
-                        >
-                          {#if selectedSharding === "Pipeline"}
-                            <span class="w-1.5 h-1.5 rounded-full bg-exo-yellow"
-                            ></span>
-                          {/if}
-                        </span>
-                        Pipeline
-                      </button>
-                      <button
-                        onclick={() => {
-                          selectedSharding = "Tensor";
-                          saveLaunchDefaults();
-                        }}
-                        class="flex items-center gap-2 py-1.5 px-3 text-xs font-mono border rounded transition-all duration-200 cursor-pointer {selectedSharding ===
-                        'Tensor'
-                          ? 'bg-transparent text-exo-yellow border-exo-yellow'
-                          : 'bg-transparent text-white/70 border-exo-medium-gray/50 hover:border-exo-yellow/50'}"
-                      >
-                        <span
-                          class="w-3 h-3 rounded-full border-2 flex items-center justify-center {selectedSharding ===
-                          'Tensor'
-                            ? 'border-exo-yellow'
-                            : 'border-exo-medium-gray'}"
-                        >
-                          {#if selectedSharding === "Tensor"}
-                            <span class="w-1.5 h-1.5 rounded-full bg-exo-yellow"
-                            ></span>
-                          {/if}
-                        </span>
-                        Tensor
-                      </button>
+      <button
+        onclick={() => {
+          selectedSharding = "Pipeline";
+          saveLaunchDefaults();
+        }}
+        class="flex items-center gap-2 py-1.5 px-3 text-xs font-mono border rounded transition-all duration-200 cursor-pointer {selectedSharding ===
+        'Pipeline'
+          ? 'bg-exo-yellow/15 text-exo-yellow border-exo-yellow'
+          : 'bg-transparent text-white/70 border-exo-medium-gray/50 hover:border-exo-yellow/50'}"
+      >
+        <span
+          class="w-3 h-3 rounded-full border-2 flex items-center justify-center {selectedSharding ===
+          'Pipeline'
+            ? 'border-exo-yellow'
+            : 'border-exo-medium-gray'}"
+        >
+          {#if selectedSharding === "Pipeline"}
+          <span class="w-1.5 h-1.5 rounded-full bg-exo-yellow"
+          ></span>
+          {/if}
+        </span>
+        Pipeline
+      </button>
+      <button
+        onclick={() => {
+          selectedSharding = "Tensor";
+          saveLaunchDefaults();
+        }}
+        class="flex items-center gap-2 py-1.5 px-3 text-xs font-mono border rounded transition-all duration-200 cursor-pointer {selectedSharding ===
+        'Tensor'
+          ? 'bg-exo-yellow/15 text-exo-yellow border-exo-yellow'
+          : 'bg-transparent text-white/70 border-exo-medium-gray/50 hover:border-exo-yellow/50'}"
+      >
+        <span
+          class="w-3 h-3 rounded-full border-2 flex items-center justify-center {selectedSharding ===
+          'Tensor'
+            ? 'border-exo-yellow'
+            : 'border-exo-medium-gray'}"
+        >
+          {#if selectedSharding === "Tensor"}
+          <span class="w-1.5 h-1.5 rounded-full bg-exo-yellow"
+          ></span>
+          {/if}
+        </span>
+        Tensor
+      </button>
                     </div>
                   </div>
 
@@ -5768,52 +5768,52 @@
                       Interconnect:
                     </div>
                     <div class="flex gap-2">
-                      <button
-                        onclick={() => {
-                          selectedInstanceType = "MlxRing";
-                          saveLaunchDefaults();
-                        }}
-                        class="flex items-center gap-2 py-1.5 px-3 text-xs font-mono border rounded transition-all duration-200 cursor-pointer {selectedInstanceType ===
-                        'MlxRing'
-                          ? 'bg-transparent text-exo-yellow border-exo-yellow'
-                          : 'bg-transparent text-white/70 border-exo-medium-gray/50 hover:border-exo-yellow/50'}"
-                      >
-                        <span
-                          class="w-3 h-3 rounded-full border-2 flex items-center justify-center {selectedInstanceType ===
-                          'MlxRing'
-                            ? 'border-exo-yellow'
-                            : 'border-exo-medium-gray'}"
-                        >
-                          {#if selectedInstanceType === "MlxRing"}
-                            <span class="w-1.5 h-1.5 rounded-full bg-exo-yellow"
-                            ></span>
-                          {/if}
-                        </span>
-                        TCP/IP
-                      </button>
-                      <button
-                        onclick={() => {
-                          selectedInstanceType = "MlxJaccl";
-                          saveLaunchDefaults();
-                        }}
-                        class="flex items-center gap-2 py-1.5 px-3 text-xs font-mono border rounded transition-all duration-200 cursor-pointer {selectedInstanceType ===
-                        'MlxJaccl'
-                          ? 'bg-transparent text-exo-yellow border-exo-yellow'
-                          : 'bg-transparent text-white/70 border-exo-medium-gray/50 hover:border-exo-yellow/50'}"
-                      >
-                        <span
-                          class="w-3 h-3 rounded-full border-2 flex items-center justify-center {selectedInstanceType ===
-                          'MlxJaccl'
-                            ? 'border-exo-yellow'
-                            : 'border-exo-medium-gray'}"
-                        >
-                          {#if selectedInstanceType === "MlxJaccl"}
-                            <span class="w-1.5 h-1.5 rounded-full bg-exo-yellow"
-                            ></span>
-                          {/if}
-                        </span>
-                        RDMA (Fast)
-                      </button>
+      <button
+        onclick={() => {
+          selectedInstanceType = "MlxRing";
+          saveLaunchDefaults();
+        }}
+        class="flex items-center gap-2 py-1.5 px-3 text-xs font-mono border rounded transition-all duration-200 cursor-pointer {selectedInstanceType ===
+        'MlxRing'
+          ? 'bg-exo-yellow/15 text-exo-yellow border-exo-yellow'
+          : 'bg-transparent text-white/70 border-exo-medium-gray/50 hover:border-exo-yellow/50'}"
+      >
+        <span
+          class="w-3 h-3 rounded-full border-2 flex items-center justify-center {selectedInstanceType ===
+          'MlxRing'
+            ? 'border-exo-yellow'
+            : 'border-exo-medium-gray'}"
+        >
+          {#if selectedInstanceType === "MlxRing"}
+          <span class="w-1.5 h-1.5 rounded-full bg-exo-yellow"
+          ></span>
+          {/if}
+        </span>
+        TCP/IP
+      </button>
+      <button
+        onclick={() => {
+          selectedInstanceType = "MlxJaccl";
+          saveLaunchDefaults();
+        }}
+        class="flex items-center gap-2 py-1.5 px-3 text-xs font-mono border rounded transition-all duration-200 cursor-pointer {selectedInstanceType ===
+        'MlxJaccl'
+          ? 'bg-exo-yellow/15 text-exo-yellow border-exo-yellow'
+          : 'bg-transparent text-white/70 border-exo-medium-gray/50 hover:border-exo-yellow/50'}"
+      >
+        <span
+          class="w-3 h-3 rounded-full border-2 flex items-center justify-center {selectedInstanceType ===
+          'MlxJaccl'
+            ? 'border-exo-yellow'
+            : 'border-exo-medium-gray'}"
+        >
+          {#if selectedInstanceType === "MlxJaccl"}
+          <span class="w-1.5 h-1.5 rounded-full bg-exo-yellow"
+          ></span>
+          {/if}
+        </span>
+        RDMA (Fast)
+      </button>
                     </div>
                   </div>
 
@@ -5939,13 +5939,28 @@
                       </div>
                     {/each}
                   </div>
-                {:else if selectedModel}
-                  <div class="text-center py-4">
-                    <div class="text-xs text-white/50 font-mono">
-                      No valid configurations for current settings
-                    </div>
-                  </div>
-                {/if}
+    {:else if selectedModel}
+      {@const hasErrorPreviews = previewsData.some(
+        (p) =>
+          p.sharding === selectedSharding &&
+          matchesSelectedRuntime(p.instance_meta) &&
+          p.error !== null,
+      )}
+      <div class="text-center py-4">
+        {#if hasErrorPreviews}
+          <div class="text-xs text-red-400 font-mono">
+            Configuration error: Check console for details
+          </div>
+          <div class="text-[10px] text-white/30 font-mono mt-1">
+            Current sharding/interconnect combination not supported
+          </div>
+        {:else}
+          <div class="text-xs text-white/50 font-mono">
+            No valid configurations for current settings
+          </div>
+        {/if}
+      </div>
+    {/if}
               {/if}
             </div>
           </div>

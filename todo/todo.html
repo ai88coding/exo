@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>EXO TODO</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0d1117;
+  color: #c9d1d9;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+  padding: 30px;
+  min-height: 100vh;
+}
+.container { max-width: 720px; margin: 0 auto; }
+h1 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #58a6ff;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #21262d;
+  letter-spacing: 0.3px;
+}
+.timestamp {
+  font-size: 11px;
+  color: #484f58;
+  margin-bottom: 20px;
+}
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  transition: background 0.15s;
+}
+.item:hover { background: #161b22; }
+.item .icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+.item .text { flex: 1; }
+.item.pending .text { color: #484f58; }
+.item.in_progress .text { color: #3fb950; }
+.item.in_progress .icon { animation: blink 1s step-end infinite; }
+.item.completed .text { color: #d29922; text-decoration: line-through; }
+.item.failed .text { color: #f85149; }
+@keyframes blink { 50% { opacity: 0.3; } }
+.status-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.status-badge.pending { background: #21262d; color: #484f58; }
+.status-badge.in_progress { background: #0b2e1a; color: #3fb950; }
+.status-badge.completed { background: #2d1f00; color: #d29922; }
+.status-badge.failed { background: #3d1214; color: #f85149; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1 id="title"></h1>
+  <div class="timestamp" id="timestamp"></div>
+  <div id="list"></div>
+</div>
+<script>
+const STATUS_MAP = { pending: '⏳', in_progress: '▶️', completed: '✅', failed: '❌' };
+const LABEL_MAP = { pending: '等待', in_progress: '進行', completed: '完成', failed: '失敗' };
+
+function render(data) {
+  document.getElementById('title').textContent = data.title;
+  document.getElementById('timestamp').textContent = '更新: ' + new Date().toLocaleTimeString();
+
+  const html = data.items.map(item => {
+    const icon = STATUS_MAP[item.status] || '⏳';
+    const label = LABEL_MAP[item.status] || item.status;
+    return `<div class="item ${item.status}">
+      <span class="icon">${icon}</span>
+      <span class="text">${item.text}</span>
+      <span class="status-badge ${item.status}">${label}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('list').innerHTML = html;
+}
+
+async function poll() {
+  try {
+    const r = await fetch('/todo.json?_=' + Date.now());
+    render(await r.json());
+  } catch {}
+}
+setInterval(poll, 1000);
+poll();
+</script>
+</body>
+</html>
